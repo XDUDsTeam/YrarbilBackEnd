@@ -1,0 +1,62 @@
+% 设置格式
+
+%防止重复引用
+
+\ifx \incpreamble \undefined
+\def\incpreamble{}
+\else
+\endinput
+\fi
+
+\makeatletter
+\def\doclass{
+\ifx \@NoCTEX \undefined
+\documentclass[UTF8]{ctexart}
+\else
+\documentclass[UTF8]{article}
+\usepackage{xeCJK}
+\fi
+}
+\doclass
+\makeatother
+
+\makeatletter
+\ifx \@NoLiterateHaskell \undefined
+\usepackage{xltxtra} %提供 XeLaTeX logo
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{color,xcolor}
+\newcounter{codeline}
+\setcounter{codeline}{1}
+\lstnewenvironment{code}{firstnumber=last,language=Haskell,breaklines,backgroundcolor=\color[rgb]{1.00,0.90,1.00},basicstyle=\sffamily,keywordstyle=\bfseries\color[rgb]{0.16,0.53,0.53},commentstyle=\rmfamily\itshape,flexiblecolumns,numbers=left,numberstyle=\tiny,frame=trBL,label=sourceCtr}}{\setcounter{codeline}{\value{lstnumber}}}
+\lstnewenvironment{spec}{language=Haskell,breaklines,backgroundcolor=\color[rgb]{0.36,0.67,0.78},basicstyle=\sffamily,keywordstyle=\bfseries\color[rgb]{0.16,0.53,0.53},commentstyle=\rmfamily\itshape,flexiblecolumns,numbers=left,numberstyle=\tiny,frame=trBL,label=sourceCtr}}{\setcounter{lstnumber}{\value{codeline}}}
+\lstnewenvironment{example}{language=Haskell,breaklines,backgroundcolor=\color[rgb]{0.98,0.72,0.43},basicstyle=\sffamily,keywordstyle=\bfseries\color[rgb]{0.16,0.53,0.53},commentstyle=\rmfamily\itshape,flexiblecolumns,numbers=left,numberstyle=\tiny,frame=trBL,label=sourceCtr}}{\setcounter{lstnumber}{\value{codeline}}}
+\lstnewenvironment{jsonlists}{language=JavaScript,breaklines,basicstyle=\sffamily,keywordstyle=\bfseries\color[rgb]{0.16,0.53,0.53},commentstyle=\rmfamily\itshape,flexiblecolumns,numbers=left,numberstyle=\tiny,frame=trBL,label=sourceCtr}}{\setcounter{lstnumber}{\value{codeline}}}
+\long\def\ignore#1{\relax}
+\fi
+\makeatother
+
+%如果没有 CTEX
+
+
+
+\makeatletter
+\ifx \@NoJavaScript \undefined
+\lstdefinelanguage{JavaScript}
+{
+  morekeywords={true,false,null},
+  alsoletter={:},
+  moredelim=[s][{\color[rgb]{0.67,0.00,0.67}}]{"}{"},
+  moredelim=[s][{\color[rgb]{0.36,0.67,0.78}}]{:"}{"},
+  identifierstyle=\color{blue}
+}[keywords,comments,strings]
+\fi
+\makeatother
+
+\usepackage[colorlinks,linkcolor=blue,anchorcolor=blue,citecolor=red,bookmarksnumbered]{hyperref}
+
+%定义 BibTeX 图标
+\def\BibTeX{{\rm B \kern-.05em{\sc i\kern-.025em b}\kern-.08em T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\author{Qinka\\qinka@live.com}
+\title{Yrarbil 后端参考文档}
