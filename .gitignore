@@ -17,6 +17,11 @@ cabal.sandbox.config
 *.hp
 
 # for LaTeX
+*.log
+*.out
+*.pdf
+*.synctex.gz
+*.toc
 
 
 # for Mac
