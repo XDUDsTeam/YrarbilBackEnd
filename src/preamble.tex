@@ -5,7 +5,7 @@
 \ifx \incpreamble \undefined
 \def\incpreamble{}
 \else
-\setcounter{lstnumber}{0}
+\setcounter{lstnumber}{1}
 \endinput
 \fi
 
@@ -29,6 +29,7 @@
 \usepackage{color,xcolor}
 \newcounter{codeline}
 \setcounter{codeline}{1}
+\setcounter{lstnumber}{1}
 
 \lstnewenvironment{code}{\lstset{firstnumber=last,language=Haskell,breaklines,backgroundcolor=\color[rgb]{1.00,0.90,1.00},basicstyle=\sffamily,keywordstyle=\bfseries\color[rgb]{0.16,0.53,0.53},commentstyle=\rmfamily\itshape,flexiblecolumns,numbers=left,numberstyle=\tiny,frame=trBL,label=sourceCtr}}{\setcounter{codeline}{\value{lstnumber}}}
 
