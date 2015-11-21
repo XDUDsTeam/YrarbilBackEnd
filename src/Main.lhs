@@ -7,52 +7,80 @@
 %包含导言文件
 %\input{preamble}
 
-\ignore{
+\subsection{特性}
+\begin{code}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeFamilies #-}
+\end{code}
 
+\subsection{模块 Main}
+\begin{code}
+module Main where
+\end{code}
 
-> {-# LANGUAGE OverloadedStrings #-}
-> {-# LANGUAGE QuasiQuotes #-}
-> {-# LANGUAGE TemplateHaskell #-}
-> {-# LANGUAGE TypeFamilies #-}
-
-
-> module Main
->       (
->         main
->       ) where
-
-}
 
 \subsection{导入}
 需要 Yesod 。
 \begin{code}
         import        Yesod
 \end{code}
+Persistent & Postgresql
+\begin{code}
+        import    Database.Persist
+        import    Database.Persist.TH
+        import    Database.Persist.Postgresql
+\end{code}
+monad-logger。
+\begin{code}
+        import    Control.Monad.Logger
+\end{code}
+导入 Sql 设置。
+\begin{code}
+        import    Main.SqlConnection
+\end{code}
+导入子站-Version（Information）。
+\begin{code}
+        import    Info
+\end{code}
 
 \subsection{定义主程序类型}
-HelloWorld 类型。
+YrabrilBackEnd 后端 主数据
 \begin{code}
-        data HelloWorld = HelloWorld
-        instance Yesod HelloWorld where
+        data YrarbilBackEnd = YrarbilBackEnd
+          { connPool :: ConnectionPool
+          , getInformation :: Information
+          }
 \end{code}
+
+
+
 
 \subsection{Yesod 路由}
 Yesod 路由表。
 \begin{code}
-        mkYesod "HelloWorld" [parseRoutes|
+        mkYesod "YrarbilBackEnd" [parseRoutes|
         / HomeR GET
+        /version SubsiteR Information getInformation
         |]
+        instance Yesod YrarbilBackEnd where
 \end{code}
 \subsection{访问主页}
 主页由\textbf{getHomeR}生成。
 \begin{code}
-        getHomeR :: Handler Html
-        getHomeR = defaultLayout [whamlet|Hello,World!|]
+        getHomeR :: HandlerT YrarbilBackEnd IO Html
+        getHomeR = do
+          defaultLayout [whamlet|Hello,Yrarbil!|]
 \end{code}
 
 \subsection{主函数}
 主函数。,访问 \href{http://localhost:3000/}{端口为3000的本地地址}，可看到。。。
 \begin{code}
         main :: IO()
-        main = warp 3000 HelloWorld
+        main = do
+          (st,lmt) <- getSqlConn "sqlserver.cfg"
+          runStderrLoggingT $ withPostgresqlPool st lmt $
+            \pool ->liftIO $
+              warp 3000 $ YrarbilBackEnd pool $ Information pool
 \end{code}

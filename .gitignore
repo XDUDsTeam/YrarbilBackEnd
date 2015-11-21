@@ -1,3 +1,4 @@
+# for Haskell
 dist
 cabal-dev
 *.o
@@ -14,3 +15,14 @@ cabal.sandbox.config
 *.prof
 *.aux
 *.hp
+
+# for LaTeX
+
+
+# for Mac
+.DS_Store
+
+
+# for other
+sqlserver.cfg
+*.aes

@@ -19,6 +19,20 @@
   \tableofcontents
   \pdfbookmark[1]{目录}{Qinka}
   \newpage
-  \section{主文件Main.lhs}
+
+  \section[程序主文件 Main.lhs]{Main.lhs}
+  主文件提供了 程序入口与 Yesod 的基本所需的内容。
   \input{Main.lhs}
+
+  \section[设置载入文件 Main/SqlConnection.lhs]{Main/SqlConnection.lhs}
+  提供了对数据库连接设置的读取。
+  \input{Main/SqlConnection.lhs}
+
+  \section[子站-提供版本信息 Info.lhs]{Info.lhs}
+  提供了子站-提供版本的信息。
+  \input{Info.lhs}
+
+  \section[辅助Info.lhs]{Info/Data.lhs}
+  \input{Info/Data.lhs}
+
 \end{document}
