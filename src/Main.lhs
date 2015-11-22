@@ -26,7 +26,7 @@ module Main where
 \begin{code}
         import        Yesod
 \end{code}
-Persistent \& Postgresql
+Persistent & Postgresql
 \begin{code}
         import    Database.Persist
         import    Database.Persist.TH
@@ -71,7 +71,9 @@ Yesod 路由表。
 \begin{code}
         getHomeR :: HandlerT YrarbilBackEnd IO Html
         getHomeR = do
-          defaultLayout [whamlet|Hello,Yrarbil!|]
+          defaultLayout [whamlet|
+                Hello,wordld!
+            |]
 \end{code}
 
 \subsection{主函数}

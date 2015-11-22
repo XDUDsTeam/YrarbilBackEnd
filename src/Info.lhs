@@ -51,10 +51,10 @@ JSON 处理。
 \begin{code}
         import Prelude hiding(words)
         import Data.Text.Lazy hiding(head)
-        import Data.Text.Lazy.Encoding
-        import Text.Blaze.Html.Renderer.Text (renderHtml)
+        import Data.Text.Lazy.Encoding(decodeUtf8)
+        import Text.Blaze.Html.Renderer.Utf8 (renderHtml)
 \end{code}
-Persistent \& PostgreSQL
+Persistent & PostgreSQL
 \begin{code}
         import Database.Persist
         import Database.Persist.TH
@@ -102,15 +102,44 @@ $^{\tiny{Template Haskell}}$
 \subsection{处理 GET 请求的函数}
 \begin{code}
         getInfoR :: Yesod master
-                 => HandlerT Information (HandlerT master IO) Value
+                 => HandlerT Information (HandlerT master IO) Text
         getInfoR = do
-            ver <- liftHandlerT $ runDB getDbApiVer
-            let vers = Prelude.map lam ver
-            returnJson $ object
-              [ "BackendAPIVersion" .= beApiVerData
-              , "DatabaseAPIVersion" .= vers
-              ]
-            where
+          ver <- liftHandlerT $ runDB getDbApiVer
+          let vers = Prelude.map lam ver
+          pa <- lookupGetParam "nojson"
+          case fromMaybe "false" pa of
+              "false" -> jsonOne vers
+              _ -> htmlOne vers
+          where
+              jsonOne :: Yesod master
+                       => [DbApiVer] -> HandlerT Information (HandlerT master IO) Text
+              jsonOne vers= do
+                liftHandlerT $ addHeader "Content-Type" "application/json"
+                return $ decodeUtf8 $ encode $ object
+                  [ "BackendAPIVersion" .= beApiVerData
+                  , "DatabaseAPIVersion" .= vers
+                  ]
+              htmlOne :: Yesod master
+                       => [DbApiVer] -> HandlerT Information (HandlerT master IO) Text
+              htmlOne vers = do
+                liftHandlerT $ addHeader "Content-Type" "text/html"
+                liftHandlerT $ addHeader "Accept-Charset" "utf-8"
+                return $ decodeUtf8 $ renderHtml [shamlet|
+                    $doctype 5
+                    <html>
+                      <head>
+                        <meta charset="utf-8">
+                      <body>
+                        <h1>数据库支持的 API
+                        <ul>
+                          $forall (DbApiVer aa ba ca da ea) <- vers
+                            <li> #{aa}.#{ba}.#{ca}.#{da}-#{ea}
+                        <h1>后端支持的 API
+                        <ul>
+                          $forall (BeApiVer m s t f ta) <- beApiVerData
+                            <li> #{m}.#{s}.#{t}.#{f}-#{ta}
+                  |]
+                --return "<html><body><h1>d</h1></body></html>"
               lam (Entity _ (DbApiVer a b c d e)) = DbApiVer a b c d $ head $ words e
         instance Yesod master => YesodSubDispatch Information (HandlerT master IO) where
           yesodSubDispatch = $(mkYesodSubDispatch resourcesInformation)
