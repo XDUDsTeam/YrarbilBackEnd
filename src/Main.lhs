@@ -26,7 +26,7 @@ module Main where
 \begin{code}
         import        Yesod
 \end{code}
-Persistent & Postgresql
+Persistent \& Postgresql
 \begin{code}
         import    Database.Persist
         import    Database.Persist.TH

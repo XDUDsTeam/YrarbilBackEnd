@@ -54,7 +54,7 @@ JSON 处理。
         import Data.Text.Lazy.Encoding(decodeUtf8)
         import Text.Blaze.Html.Renderer.Utf8 (renderHtml)
 \end{code}
-Persistent & PostgreSQL
+Persistent \& PostgreSQL
 \begin{code}
         import Database.Persist
         import Database.Persist.TH
