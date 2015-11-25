@@ -1,0 +1,41 @@
+# To auto build what we need.
+
+before_install:
+  - "sudo apt-get update && sudo apt-get install --no-install-recommends texlive-xetex latex-xcolor texlive-fonts-recommended texlive-latex-extra lmodern texlive-latex-recommended"
+  - "sudo apt-get install ttf-wqy-microhei ttf-wqy-zenhei"
+
+
+script:
+  - cd src
+  - xelatex BackEnd.tex
+  - xelatex BackEnd.tex
+  - xelatex BackEnd.tex
+  
+after_success: |
+  if [ -n "$GITHUB_API_KEY" ]; then
+    git config --global user.name "travis_auto"
+    git config --global user.email "qinka@live.com"
+    echo "config done"
+    cd ~
+    git clone https://qinka:$GITHUB_API_KEY@github.com/XDUDsTeam/YrarbilRelease.git
+    echo "clone done"
+    cd YrarbilRelease
+    ls
+    pwd
+    export RELPATH=$(pwd)
+    ls
+    pwd
+    cd "$TRAVIS_BUILD_DIR"/src
+    ls
+    pwd
+    cp *.pdf $RELPATH
+    echo "copy done"
+    cd $RELPATH
+    git add .
+    git commit -am"$(date)"
+    echo "commit done"
+    git push origin master
+    cd ~
+    sudo rm -rf $RELPATH
+    cd "$TRAVIS_BUILD_DIR"
+  fi
