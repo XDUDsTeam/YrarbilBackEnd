@@ -11,13 +11,13 @@
 
 \makeatletter
 \def\doclass{
-\ifx \@NoCTEX \undefined
-\documentclass[UTF8]{ctexart}
-\else
+\ifx \@UseCTEX \undefined
 \documentclass[UTF8]{article}
 \usepackage{xeCJK}
 
 \setCJKmainfont{WenQuanYi Zen Hei}
+\else
+\documentclass[UTF8]{ctexart}
 \fi
 }
 \doclass
