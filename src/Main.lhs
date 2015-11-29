@@ -13,6 +13,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE ViewPatterns #-}
 \end{code}
 
 \subsection{模块 Main}
@@ -44,6 +45,14 @@ monad-logger。
 \begin{code}
         import    Info
 \end{code}
+导入子站-认证（Auther）。
+\begin{code}
+        import    Auth
+\end{code}
+Data.Text
+\begin{code}
+        import Data.Text.Lazy
+\end{code}
 
 \subsection{定义主程序类型}
 YrabrilBackEnd 后端 主数据
@@ -51,6 +60,7 @@ YrabrilBackEnd 后端 主数据
         data YrarbilBackEnd = YrarbilBackEnd
           { connPool :: ConnectionPool
           , getInformation :: Information
+          , getAuther :: Text->Auther
           }
 \end{code}
 
@@ -62,7 +72,8 @@ Yesod 路由表。
 \begin{code}
         mkYesod "YrarbilBackEnd" [parseRoutes|
         / HomeR GET
-        /version SubsiteR Information getInformation
+        /version SubsiteVR Information getInformation
+        /1daa62b/#Text SubsiteAR Auther getAuther
         |]
         instance Yesod YrarbilBackEnd where
 \end{code}
@@ -72,7 +83,7 @@ Yesod 路由表。
         getHomeR :: HandlerT YrarbilBackEnd IO Html
         getHomeR = do
           defaultLayout [whamlet|
-                Hello,wordld!
+                Hello,wordld! 
             |]
 \end{code}
 
@@ -84,5 +95,5 @@ Yesod 路由表。
           (st,lmt) <- getSqlConn "sqlserver.cfg"
           runStderrLoggingT $ withPostgresqlPool st lmt $
             \pool ->liftIO $
-              warp 3000 $ YrarbilBackEnd pool $ Information pool
+              warp 3000 $ YrarbilBackEnd pool (Information pool) (\_->Auther pool)
 \end{code}

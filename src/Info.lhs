@@ -70,7 +70,7 @@ monad-logger:
 \end{code}
 
 \subsection{数据库部分}
-Persistent 的处理，是的可用数据库。
+Persistent 的处理，使得可用数据库。
 \begin{code}
         instance YesodPersist Information where
           type YesodPersistBackend Information = SqlBackend

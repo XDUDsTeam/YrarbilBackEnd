@@ -74,6 +74,9 @@ executable YrarbilBackEnd
                      , resourcet
                      , blaze-html
                      , parsec
+                     , time
+                     , pureMD5
+                     , SHA
 
   -- Directories containing source files.
   hs-source-dirs:      src
