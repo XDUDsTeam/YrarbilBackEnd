@@ -27,12 +27,14 @@
 module Auth
       ( module Auth
       , module Auth.Data
+      , module Data.Time
       ) where
 \end{code}
 \subsection{导入}
 导入 Yesod 与 Auth.Data
 \begin{code}
         import Yesod
+        import Yesod.Auth
         import Auth.Data
 \end{code}
 导入 aeson 处理 JSON。

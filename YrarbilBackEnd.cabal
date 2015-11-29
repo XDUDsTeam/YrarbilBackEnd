@@ -63,6 +63,7 @@ executable YrarbilBackEnd
   -- Other library packages from which modules are imported.
   build-depends:       base >=4.8 && <4.9
                      , yesod
+                     , yesod-auth
                      , monad-logger
                      , aeson
                      , bytestring

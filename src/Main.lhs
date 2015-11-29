@@ -26,6 +26,7 @@ module Main where
 需要 Yesod 。
 \begin{code}
         import        Yesod
+        import        Yesod.Auth
 \end{code}
 Persistent \& Postgresql
 \begin{code}
@@ -64,6 +65,15 @@ YrabrilBackEnd 后端 主数据
           }
 \end{code}
 
+\subsection{数据库}
+\begin{code}
+        instance YesodPersist YrarbilBackEnd where
+          type YesodPersistBackend YrarbilBackEnd = SqlBackend
+          runDB a = do
+            YrarbilBackEnd p _ _ <- getYesod
+            runSqlPool a p
+\end{code}
+
 
 
 
@@ -76,6 +86,39 @@ Yesod 路由表。
         /1daa62b/#Text SubsiteAR Auther getAuther
         |]
         instance Yesod YrarbilBackEnd where
+          isAuthorized (SubsiteAR _ (AdmininR _ _)) _ = return Authorized
+          isAuthorized (SubsiteAR _ (ReaderinR _ _)) _ = return Authorized
+          isAuthorized (SubsiteAR _ _) _ = do
+            tidk' <- lookupPostParam "tidk"
+            if tidk' == Nothing then return $ Unauthorized ":("
+              else do
+                let tidk = (pack.read.show.(\(Just x)->x)) tidk'
+                rt' <- liftHandlerT $ runDB $ selectList [TidTid ==. tidk] []
+                let rt = Prelude.map lam rt'
+                if Prelude.null rt then return $ Unauthorized ":("
+                  else do
+                    let (Tid _ time _) = Prelude.head rt
+                    tnow <- liftIO $ getCurrentTime
+                    if diffUTCTime time tnow <0 then return $ Unauthorized ":("
+                      else return Authorized
+            where
+              lam (Entity _ x) = x
+
+          isAuthorized _ _ = do
+            tidk' <- lookupGetParam "tidk"
+            if tidk' == Nothing then return $ Unauthorized ":("
+              else do
+                let tidk = (pack.read.show.(\(Just x)->x)) tidk'
+                rt' <- liftHandlerT $ runDB $ selectList [TidTid ==. tidk] []
+                let rt = Prelude.map lam rt'
+                if Prelude.null rt then return $ Unauthorized ":("
+                  else do
+                    let (Tid _ time _) = Prelude.head rt
+                    tnow <- liftIO $ getCurrentTime
+                    if diffUTCTime time tnow <0 then return $ Unauthorized ":("
+                      else return Authorized
+            where
+              lam (Entity _ x) = x
 \end{code}
 \subsection{访问主页}
 主页由\textbf{getHomeR}生成。
@@ -83,7 +126,7 @@ Yesod 路由表。
         getHomeR :: HandlerT YrarbilBackEnd IO Html
         getHomeR = do
           defaultLayout [whamlet|
-                Hello,wordld! 
+                Hello,wordld!
             |]
 \end{code}
 
