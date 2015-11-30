@@ -374,7 +374,7 @@ MD5 与 SHA256 加密
 \end{spec}
 ReturnTextValue
 \begin{code}
-        returnTJson :: Yesod master => Value -> HandlerT Auther (HandlerT master IO) Text
+        returnTJson :: Monad m =>  Value -> HandlerT site m Text
         returnTJson = return.decodeUtf8.encode
 \end{code}
 实现 YesodSubDispatch
