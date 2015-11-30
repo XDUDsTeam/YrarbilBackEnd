@@ -3,8 +3,13 @@
 
 
 
-%
+%????
+%SafeS.lhs
 
+%?????
+\input{preamble}
 
-> module SafeS where
-> d = undefined
+\subsection{?? SafeS}
+\begin{code}
+module SafeS where
+\end{code}

@@ -86,6 +86,45 @@ Yesod 路由表。
         /1daa62b/#Text SubsiteAR Auther getAuther
         |]
         instance Yesod YrarbilBackEnd where
+          errorHandler NotFound= selectRep $ provideRep $ do
+            liftHandlerT $ addHeader "Content-Type" "application/json"
+            returnTJson $ object
+              [ "status" .= ("error" ::Text)
+              , "reason" .= ("not found" ::Text)
+              ]
+          errorHandler NotAuthenticated = selectRep $ provideRep $ do
+            liftHandlerT $ addHeader "Content-Type" "application/json"
+            returnTJson $ object
+              [ "status" .= ("error" ::Text)
+              , "reason" .= ("not logged in" ::Text)
+              ]
+          errorHandler (PermissionDenied msg) = selectRep$ provideRep $ do
+            liftHandlerT $ addHeader "Content-Type" "application/json"
+            returnTJson $ object
+              [ "status" .= ("error" ::Text)
+              , "reason" .= ("PermissionDenied" ::Text)
+              , "msg" .= msg
+              ]
+          errorHandler (InvalidArgs ia) = selectRep $ provideRep $ do
+            liftHandlerT $ addHeader "Content-Type" "application/json"
+            returnTJson $ object
+              [ "status" .= ("error" ::Text)
+              , "reason" .= ("InvalidArgs" ::Text)
+              , "args" .= ia
+              ]
+          errorHandler (BadMethod _) = selectRep $ provideRep $ do
+            liftHandlerT $ addHeader "Content-Type" "application/json"
+            returnTJson $ object
+              [ "status" .= ("error" ::Text)
+              , "reason" .= ("BadMethod" ::Text)
+              ]
+          errorHandler (InternalError t) = selectRep $ provideRep $ do
+            liftHandlerT $ addHeader "Content-Type" "application/json"
+            returnTJson $ object
+              [ "status" .= ("error" ::Text)
+              , "reason" .= ("InternalError" ::Text)
+              , "msg" .= t
+              ]
           isAuthorized (SubsiteAR _ (AdmininR _ _)) _ = return Authorized
           isAuthorized (SubsiteAR _ (ReaderinR _ _)) _ = return Authorized
           isAuthorized (SubsiteAR _ _) _ = do
