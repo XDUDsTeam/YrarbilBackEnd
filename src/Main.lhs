@@ -87,18 +87,21 @@ Yesod 路由表。
         |]
         instance Yesod YrarbilBackEnd where
           errorHandler NotFound= selectRep $ provideRep $ do
+            liftIO $ threadDelay 10000000
             liftHandlerT $ addHeader "Content-Type" "application/json"
             returnTJson $ object
               [ "status" .= ("error" ::Text)
               , "reason" .= ("not found" ::Text)
               ]
           errorHandler NotAuthenticated = selectRep $ provideRep $ do
+            liftIO $ threadDelay 10000000
             liftHandlerT $ addHeader "Content-Type" "application/json"
             returnTJson $ object
               [ "status" .= ("error" ::Text)
               , "reason" .= ("not logged in" ::Text)
               ]
           errorHandler (PermissionDenied msg) = selectRep$ provideRep $ do
+            liftIO $ threadDelay 10000000
             liftHandlerT $ addHeader "Content-Type" "application/json"
             returnTJson $ object
               [ "status" .= ("error" ::Text)
@@ -106,6 +109,7 @@ Yesod 路由表。
               , "msg" .= msg
               ]
           errorHandler (InvalidArgs ia) = selectRep $ provideRep $ do
+            liftIO $ threadDelay 10000000
             liftHandlerT $ addHeader "Content-Type" "application/json"
             returnTJson $ object
               [ "status" .= ("error" ::Text)
@@ -113,12 +117,14 @@ Yesod 路由表。
               , "args" .= ia
               ]
           errorHandler (BadMethod _) = selectRep $ provideRep $ do
+            liftIO $ threadDelay 10000000
             liftHandlerT $ addHeader "Content-Type" "application/json"
             returnTJson $ object
               [ "status" .= ("error" ::Text)
               , "reason" .= ("BadMethod" ::Text)
               ]
           errorHandler (InternalError t) = selectRep $ provideRep $ do
+            liftIO $ threadDelay 10000000
             liftHandlerT $ addHeader "Content-Type" "application/json"
             returnTJson $ object
               [ "status" .= ("error" ::Text)

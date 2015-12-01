@@ -11,7 +11,6 @@
 \input{preamble}
 \subsection{使用的特性}
 \begin{code}
-{-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE QuasiQuotes                #-}
 {-# LANGUAGE OverloadedStrings          #-}
