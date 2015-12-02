@@ -31,3 +31,6 @@ cabal.sandbox.config
 # for other
 sqlserver.cfg
 *.aes
+
+#vscode
+.vscode
