@@ -30,7 +30,7 @@ Text
 \begin{code}
         import Data.Text.Lazy
 \end{code}
-使用 Safe 确定安全
+使用 SafeS 确定安全
 \begin{code}
         import SafeS
 \end{code}
