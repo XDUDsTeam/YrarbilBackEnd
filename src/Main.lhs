@@ -54,6 +54,10 @@ Data.Text
 \begin{code}
         import Data.Text.Lazy
 \end{code}
+设置延迟
+\begin{code}
+        import Control.Concurrent(threadDelay)
+\end{code}
 
 \subsection{定义主程序类型}
 YrabrilBackEnd 后端 主数据
@@ -131,6 +135,8 @@ Yesod 路由表。
               , "reason" .= ("InternalError" ::Text)
               , "msg" .= t
               ]
+          isAuthorized HomeR  _ = return Authorized
+          isAuthorized (SubsiteVR _) _ = return Authorized
           isAuthorized (SubsiteAR _ (AdmininR _ _)) _ = return Authorized
           isAuthorized (SubsiteAR _ (ReaderinR _ _)) _ = return Authorized
           isAuthorized (SubsiteAR _ _) _ = do
@@ -148,7 +154,6 @@ Yesod 路由表。
                       else return Authorized
             where
               lam (Entity _ x) = x
-
           isAuthorized _ _ = do
             tidk' <- lookupGetParam "tidk"
             if tidk' == Nothing then return $ Unauthorized ":("
@@ -180,8 +185,11 @@ Yesod 路由表。
 \begin{code}
         main :: IO()
         main = do
-          (st,lmt) <- getSqlConn "sqlserver.cfg"
-          runStderrLoggingT $ withPostgresqlPool st lmt $
-            \pool ->liftIO $
-              warp 3000 $ YrarbilBackEnd pool (Information pool) (\_->Auther pool)
+          sqlC <- getSqlConn
+          case toConConfig sqlC of
+            Just (st,lmt) -> do
+              runStderrLoggingT $ withPostgresqlPool st lmt $
+                \pool ->liftIO $
+                warp 3000 $ YrarbilBackEnd pool (Information pool) (\_->Auther pool)
+            Nothing -> error "error config"
 \end{code}

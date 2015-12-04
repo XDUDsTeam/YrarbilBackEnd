@@ -180,7 +180,6 @@ MD5 与 SHA256 加密
             toInt = Prelude.read
             le =  show.md5.encodeUtf8
 \end{code}
-
 用户登陆。
 \begin{code}
         postReaderinR :: Yesod master
