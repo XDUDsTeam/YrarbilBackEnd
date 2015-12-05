@@ -11,9 +11,16 @@
 
 \subsection{特性}
 \begin{code}
-{-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE QuasiQuotes                #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE TypeFamilies               #-}
+{-# LANGUAGE GADTs                      #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE ViewPatterns               #-}
+{-# LANGUAGE DeriveGeneric              #-}
 \end{code}
 
 \subsection{模块 Management}
@@ -25,10 +32,11 @@ module Management
 \end{code}
 
 \subsection{导入}
-导入 Yesod 与 Management.Data。
+导入 Yesod 、 Common 与 Management.Data。
 \begin{code}
         import Yesod
         import Management.Data
+        import Common
 \end{code}
 处理JSON。
 \begin{code}
@@ -38,10 +46,16 @@ module Management
 \begin{code}
         import Data.Maybe
 \end{code}
+处理 Either。
+\begin{code}
+        import Data.Either
+\end{code}
 对 Text 的支持.
 \begin{code}
         import Prelude hiding(words,length,concat,splitAt)
-        import Data.Text.Lazy hiding(head,read)
+        import qualified Prelude as P
+        import Data.Text.Lazy hiding(head,read,null)
+        import Data.Text.Internal (showText)
         import Data.Text.Lazy.Encoding(decodeUtf8,encodeUtf8)
 \end{code}
 Persistent \& PostgreSQL
@@ -53,6 +67,11 @@ Persistent \& PostgreSQL
 处理时间。
 \begin{code}
         import Data.Time
+        import Data.Time.Clock
+\end{code}
+对数字字符的处理。
+\begin{code}
+        import Data.Char(isDigit)
 \end{code}
 \subsection{数据库处理}
 使用 Persistent 处理数据库。
@@ -60,7 +79,7 @@ Persistent \& PostgreSQL
         instance YesodPersist Management where
           type YesodPersistBackend Management = SqlBackend
           runDB a = do
-            Auther p <- getYesod
+            Management p <- getYesod
             runSqlPool a p
 \end{code}
 数据库的表。
@@ -116,7 +135,7 @@ Persistent \& PostgreSQL
             deriving Eq Show
           Reader json sql=table_reader
             Id sql=
-            barcode TEXT
+            barcode Text
             idctp Text Maybe sql=idcard_type
             idcid Text Maybe sql=idcard_id
             debt Double sqltype=money
@@ -129,8 +148,98 @@ Persistent \& PostgreSQL
             date Day sql=opt_date
             usrtp Int sql=opt_usr_type
             usrid Text sql=opt_usr_id
-            Primary ssm
+            Primary ssm date
             deriving Eq Show
+          Tid json sql=table_tmpidkey
+            Id sql=
+            tid Text sql=tmpid
+            time UTCTime sql=timeend
+            uid Text sql=id
+            Primary tid
+            deriving Show Eq
           |]
+\end{code}
+图书借出的处理函数。
+\begin{code}
+        postBooklendR :: Yesod master
+                      => Text
+                      -> HandlerT Management (HandlerT master IO) Text
+        postBooklendR _ = do
+          liftHandlerT $ addHeader "Content-Type" "application/json"
+          rId <- lookupPostParam "rid"
+          bId <- lookupPostParam "bid"
+          case (rId,bId) of
+            (Just rid,Just bid) -> do
+\end{code}
+检查图书是否在架。
+\begin{code}
+              let bc = read $ show bid
+              ioshelf <- liftHandlerT $ runDB $ selectList
+                ([BookitemBarcode ==. bc] ||. [BookitemOnshelf ==. True] ||. [BookitemThere ==. True]) []
+              if null ioshelf
+                then returnTJson $ object
+                  [ "status" .= ("failed" ::String)
+                  , "reason" .= ("The book is not on the shelf or there." ::String)
+                  ]
+                else do
+\end{code}
+一次可以借阅 15 本。
+\begin{code}
+                  bs <- liftHandlerT $ runDB $ selectList
+                    [BookitemLastid ==. (Just (t2t rid))] []
+                  if P.length bs >= 15
+                    then returnTJson $ object
+                      [ "status" .= ("failed" ::String)
+                      , "reason" .= ("Can not lend more!"::String)
+                      ]
+                    else do
+\end{code}
+借阅图书。
+\begin{code}
+                      time <- liftIO $ getCurrentTime
+                      tidk' <- lookupPostParam "tidk"
+                      let (Just tidk) = tidk'
+                      (Entity _ (Tid _ _ uid):_) <- liftHandlerT $ runDB $ selectList [TidTid ==. t2t tidk] []
+                      let sn = read $ show [ a | a <- (show time++show tidk) , isDigit a]
+                      liftHandlerT $ runDB $ insert $ Opt sn (utctDay time) 0 uid
+                      liftHandlerT $ runDB $ insert $
+                        Bookopt
+                          (pack (show sn ++ show time))
+                          (t2t rid)
+                          (read $  showText bid)
+                          [30] $
+                          Just $ addDays 30 $ utctDay time
+                      let (Right ke) = keyFromValues [PersistInt64 $ read $ showText bid]
+                      liftHandlerT $ runDB $ update ke [BookitemOnshelf =. False]
+                      returnTJson $ object
+                        [ "status" .= ("success" ::String)
+                        , "date" .= utctDay time
+                        ]
 
+\end{code}
+如果参数不齐，则返回错误。
+\begin{code}
+            _ -> do
+              returnTJson $ object
+                [ "status" .= ("failed" ::String)
+                , "reason" .= ("No reader's id or book's id(barcode)." ::String)
+                ]
+          where
+            lam (Entity _ x) = x
+\end{code}
+归还图书处理函数。
+\begin{code}
+        --postBooklendR
+\end{code}
+
+>       postBookreturnR,postBookrenewR :: Yesod master
+>              => Text
+>              -> HandlerT Management (HandlerT master IO) Text
+>       postBookreturnR  = undefined
+>       postBookrenewR = undefined
+
+实现 YesodSubDispatch
+\begin{code}
+        instance Yesod master => YesodSubDispatch Management (HandlerT master IO) where
+          yesodSubDispatch = $(mkYesodSubDispatch resourcesManagement)
 \end{code}

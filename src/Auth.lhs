@@ -30,11 +30,12 @@ module Auth
       ) where
 \end{code}
 \subsection{导入}
-导入 Yesod 与 Auth.Data
+导入 Yesod 、 Common 与 Auth.Data
 \begin{code}
         import Yesod
         import Yesod.Auth
         import Auth.Data
+        import Common
 \end{code}
 导入 aeson 处理 JSON。
 \begin{code}
@@ -370,18 +371,8 @@ MD5 与 SHA256 加密
           where
             lam (Entity _ x) = x
 \end{spec}
-ReturnTextValue
-\begin{code}
-        returnTJson :: Monad m =>  Value -> HandlerT site m Text
-        returnTJson = return.decodeUtf8.encode
-\end{code}
 实现 YesodSubDispatch
 \begin{code}
         instance Yesod master => YesodSubDispatch Auther (HandlerT master IO) where
           yesodSubDispatch = $(mkYesodSubDispatch resourcesAuther)
-\end{code}
-Data.Text.Internal.Text => Data.Lazy.Text
-\begin{code}
-        t2t :: DTI.Text -> Text
-        t2t = pack.showText
 \end{code}

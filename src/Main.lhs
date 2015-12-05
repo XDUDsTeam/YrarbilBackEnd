@@ -23,6 +23,10 @@ module Main where
 
 
 \subsection{导入}
+导入 Common。
+\begin{code}
+        import Common
+\end{code}
 需要 Yesod 。
 \begin{code}
         import        Yesod
@@ -50,6 +54,10 @@ monad-logger。
 \begin{code}
         import    Auth
 \end{code}
+导入子站 - 借阅 Management。
+\begin{code}
+        import    Management
+\end{code}
 Data.Text
 \begin{code}
         import Data.Text.Lazy
@@ -66,6 +74,7 @@ YrabrilBackEnd 后端 主数据
           { connPool :: ConnectionPool
           , getInformation :: Information
           , getAuther :: Text->Auther
+          , getManagement :: Text -> Management
           }
 \end{code}
 
@@ -74,7 +83,7 @@ YrabrilBackEnd 后端 主数据
         instance YesodPersist YrarbilBackEnd where
           type YesodPersistBackend YrarbilBackEnd = SqlBackend
           runDB a = do
-            YrarbilBackEnd p _ _ <- getYesod
+            YrarbilBackEnd p _ _ _ <- getYesod
             runSqlPool a p
 \end{code}
 
@@ -88,6 +97,7 @@ Yesod 路由表。
         / HomeR GET
         /version SubsiteVR Information getInformation
         /1daa62b/#Text SubsiteAR Auther getAuther
+        /a3cab3a/#Text SubsiteMR Management getManagement
         |]
         instance Yesod YrarbilBackEnd where
           errorHandler NotFound= selectRep $ provideRep $ do
@@ -139,36 +149,40 @@ Yesod 路由表。
           isAuthorized (SubsiteVR _) _ = return Authorized
           isAuthorized (SubsiteAR _ (AdmininR _ _)) _ = return Authorized
           isAuthorized (SubsiteAR _ (ReaderinR _ _)) _ = return Authorized
-          isAuthorized (SubsiteAR _ _) _ = do
-            tidk' <- lookupPostParam "tidk"
-            if tidk' == Nothing then return $ Unauthorized ":("
-              else do
-                let tidk = (pack.read.show.(\(Just x)->x)) tidk'
-                rt' <- liftHandlerT $ runDB $ selectList [TidTid ==. tidk] []
-                let rt = Prelude.map lam rt'
-                if Prelude.null rt then return $ Unauthorized ":("
-                  else do
-                    let (Tid _ time _) = Prelude.head rt
-                    tnow <- liftIO $ getCurrentTime
-                    if diffUTCTime time tnow <0 then return $ Unauthorized ":("
-                      else return Authorized
-            where
-              lam (Entity _ x) = x
-          isAuthorized _ _ = do
-            tidk' <- lookupGetParam "tidk"
-            if tidk' == Nothing then return $ Unauthorized ":("
-              else do
-                let tidk = (pack.read.show.(\(Just x)->x)) tidk'
-                rt' <- liftHandlerT $ runDB $ selectList [TidTid ==. tidk] []
-                let rt = Prelude.map lam rt'
-                if Prelude.null rt then return $ Unauthorized ":("
-                  else do
-                    let (Tid _ time _) = Prelude.head rt
-                    tnow <- liftIO $ getCurrentTime
-                    if diffUTCTime time tnow <0 then return $ Unauthorized ":("
-                      else return Authorized
-            where
-              lam (Entity _ x) = x
+          isAuthorized (SubsiteAR _ _) _ = postAuthTidk
+          isAuthorized _ _ = getAuthTidk
+
+        postAuthTidk,getAuthTidk :: HandlerT YrarbilBackEnd IO AuthResult
+        postAuthTidk  = do
+          tidk' <- lookupPostParam "tidk"
+          if tidk' == Nothing then return $ Unauthorized ":("
+            else do
+              let tidk = (pack.read.show.(\(Just x)->x)) tidk'
+              rt' <- liftHandlerT $ runDB $ selectList [Auth.TidTid ==. tidk] []
+              let rt = Prelude.map lam rt'
+              if Prelude.null rt then return $ Unauthorized ":("
+                else do
+                  let (Auth.Tid _ time _) = Prelude.head rt
+                  tnow <- liftIO $ getCurrentTime
+                  if diffUTCTime time tnow <0 then return $ Unauthorized ":("
+                    else return Authorized
+          where
+            lam (Entity _ x) = x
+        getAuthTidk = do
+          tidk' <- lookupGetParam "tidk"
+          if tidk' == Nothing then return $ Unauthorized ":("
+            else do
+              let tidk = (pack.read.show.(\(Just x)->x)) tidk'
+              rt' <- liftHandlerT $ runDB $ selectList [Auth.TidTid ==. tidk] []
+              let rt = Prelude.map lam rt'
+              if Prelude.null rt then return $ Unauthorized ":("
+                else do
+                  let (Auth.Tid _ time _) = Prelude.head rt
+                  tnow <- liftIO $ getCurrentTime
+                  if diffUTCTime time tnow <0 then return $ Unauthorized ":("
+                    else return Authorized
+          where
+            lam (Entity _ x) = x
 \end{code}
 \subsection{访问主页}
 主页由\textbf{getHomeR}生成。
@@ -190,6 +204,6 @@ Yesod 路由表。
             Just (st,lmt) -> do
               runStderrLoggingT $ withPostgresqlPool st lmt $
                 \pool ->liftIO $
-                warp 3000 $ YrarbilBackEnd pool (Information pool) (\_->Auther pool)
+                warp 3000 $ YrarbilBackEnd pool (Information pool) (\_->Auther pool) (\_ -> Management pool)
             Nothing -> error "error config"
 \end{code}

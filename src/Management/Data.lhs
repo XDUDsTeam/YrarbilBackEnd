@@ -41,8 +41,8 @@ Text
 \begin{code}
         data Management = Management ConnectionPool
         mkYesodSubData "Management" [parseRoutes|
-          /a3cab3a/#Text/5527da67/#Text BooklendR POST
-          /a3cab3a/#Text/3689884/#Text BookreturnR POST
-          /a3cab3a/#Text/4a2a356d/#Text BookrenewR POST
+          /5527da67/#Text BooklendR POST
+          /3689884/#Text BookreturnR POST
+          /4a2a356d/#Text BookrenewR POST
           |]
 \end{code}
