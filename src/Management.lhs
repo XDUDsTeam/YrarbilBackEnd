@@ -121,8 +121,9 @@ Persistent \& PostgreSQL
             bsm Text sql=big_serial_number
             rbc Text sql=reader_barcode
             bbc Int sql=book_barcode
-            timelmt [Int] sql=time_lmt
-            rtdate Day Maybe
+            times Int
+            rtdate Day Maybe sql=return_Date
+            isrt Bool sql=is_return
             Primary bsm
             deriving Eq Show
           Punish json sql=table_punish
@@ -169,53 +170,9 @@ Persistent \& PostgreSQL
           rId <- lookupPostParam "rid"
           bId <- lookupPostParam "bid"
           case (rId,bId) of
-            (Just rid,Just bid) -> do
-\end{code}
-检查图书是否在架。
-\begin{code}
-              let bc = read $ show bid
-              ioshelf <- liftHandlerT $ runDB $ selectList
-                ([BookitemBarcode ==. bc] ||. [BookitemOnshelf ==. True] ||. [BookitemThere ==. True]) []
-              if null ioshelf
-                then returnTJson $ object
-                  [ "status" .= ("failed" ::String)
-                  , "reason" .= ("The book is not on the shelf or there." ::String)
-                  ]
-                else do
-\end{code}
-一次可以借阅 15 本。
-\begin{code}
-                  bs <- liftHandlerT $ runDB $ selectList
-                    [BookitemLastid ==. (Just (t2t rid))] []
-                  if P.length bs >= 15
-                    then returnTJson $ object
-                      [ "status" .= ("failed" ::String)
-                      , "reason" .= ("Can not lend more!"::String)
-                      ]
-                    else do
-\end{code}
-借阅图书。
-\begin{code}
-                      time <- liftIO $ getCurrentTime
-                      tidk' <- lookupPostParam "tidk"
-                      let (Just tidk) = tidk'
-                      (Entity _ (Tid _ _ uid):_) <- liftHandlerT $ runDB $ selectList [TidTid ==. t2t tidk] []
-                      let sn = read $ show [ a | a <- (show time++show tidk) , isDigit a]
-                      liftHandlerT $ runDB $ insert $ Opt sn (utctDay time) 0 uid
-                      liftHandlerT $ runDB $ insert $
-                        Bookopt
-                          (pack (show sn ++ show time))
-                          (t2t rid)
-                          (read $  showText bid)
-                          [30] $
-                          Just $ addDays 30 $ utctDay time
-                      let (Right ke) = keyFromValues [PersistInt64 $ read $ showText bid]
-                      liftHandlerT $ runDB $ update ke [BookitemOnshelf =. False]
-                      returnTJson $ object
-                        [ "status" .= ("success" ::String)
-                        , "date" .= utctDay time
-                        ]
-
+            (Just rid,Just bid) -> isBookOs (read $ show bid) $
+                                   checkBC (t2t rid) $
+                                   lendBook (t2t rid) (read $ show bid)
 \end{code}
 如果参数不齐，则返回错误。
 \begin{code}
@@ -227,16 +184,122 @@ Persistent \& PostgreSQL
           where
             lam (Entity _ x) = x
 \end{code}
+借阅图书。
+\begin{code}
+            lendBook :: Yesod master
+                     => Text
+                     -> Int
+                     -> HandlerT Management (HandlerT master IO) Text
+            lendBook rid bid = do
+              time <- liftIO $ getCurrentTime
+              tidk' <- lookupPostParam "tidk"
+              let (Just tidk) = tidk'
+              (Entity _ (Tid _ _ uid):_) <- liftHandlerT $ runDB $ selectList [TidTid ==. t2t tidk] []
+              let sn = read $ show [ a | a <- (show time++show tidk) , isDigit a]
+              liftHandlerT $ runDB $ insert $ Opt sn (utctDay time) 0 uid
+              liftHandlerT $ runDB $ insert $
+                Bookopt
+                  (pack (show sn ++ show time))
+                  rid
+                  (read $  show bid)
+                  1
+                  (Just $ addDays 30 $ utctDay time)
+                  False
+              let (Right ke) = keyFromValues [PersistInt64 $ read $ show bid]
+              liftHandlerT $ runDB $ update ke [BookitemOnshelf =. False]
+              returnTJson $ object
+                [ "status" .= ("success" ::String)
+                , "date" .= utctDay time
+                ]
+\end{code}
+一次可以借阅 15 本。
+\begin{code}
+            checkBC :: Yesod master
+                    => Text
+                    -> HandlerT Management (HandlerT master IO) Text
+                    -> HandlerT Management (HandlerT master IO) Text
+            checkBC rid a = do
+              bs <- liftHandlerT $ runDB $ selectList
+                [BookitemLastid ==. (Just rid)] []
+              if P.length bs >= 15
+                then returnTJson $ object
+                  [ "status" .= ("failed" ::String)
+                  , "reason" .= ("Can not lend more!"::String)
+                  ]
+                else a
+\end{code}
+检查图书是否在架。
+\begin{code}
+        isBookOs :: Yesod master
+                 => Int
+                 -> HandlerT Management (HandlerT master IO) Text
+                 -> HandlerT Management (HandlerT master IO) Text
+        isBookOs bc a = do
+          ioshelf <- liftHandlerT $ runDB $ selectList
+            ([BookitemBarcode ==. bc] ||. [BookitemOnshelf ==. True] ||. [BookitemThere ==. True]) []
+          if null ioshelf
+            then returnTJson $ object
+              [ "status" .= ("failed" ::String)
+              , "reason" .= ("The book is not on the shelf or there." ::String)
+              ]
+            else a
+\end{code}
+查看是否有超期。
+\begin{code}
+        isOD (Entity _ (Bookopt _ _ _ _ (Just rd) _)) day = diffDays rd day < 0
+        isOD _ _ = False
+        isHasOverDate :: Yesod master
+                      => Text
+                      -> HandlerT Management (HandlerT master IO) Text
+                      -> HandlerT Management (HandlerT master IO) Text
+        isHasOverDate rid a = do
+          rt' <- liftHandlerT $ runDB $ selectList [BookoptRbc ==. rid,BookoptIsrt ==. False] []
+          time <- liftIO $ getCurrentTime
+          let day = utctDay time
+          let rt = [ r | r <-rt' , isOD r day ]
+          if P.null rt
+            then returnTJson $ object
+              [ "status" .= ("failed" ::String)
+              , "reason" .= ("not return the book overdate" ::String)
+              ]
+            else a
+        isBookOverData :: Yesod master
+                       => Int
+                       -> HandlerT Management (HandlerT master IO) Text
+                       -> HandlerT Management (HandlerT master IO) Text
+        isBookOverData bid a = do
+          rt' <- liftHandlerT $ runDB $ selectList [BookoptBbc ==. bid,BookoptIsrt ==. False] []
+          time <- liftIO $ getCurrentTime
+          let day = utctDay time
+          let rt = [ r | r<- rt', isOD r day]
+          if P.null rt
+            then returnTJson $ object
+              [ "status" .= ("failed" ::String)
+              , "reason" .= ("This book is overDATE." ::String)
+              ]
+            else a
+\end{code}
 归还图书处理函数。
 \begin{code}
-        --postBooklendR
+        postBookreturnR :: Yesod master
+                      => Text
+                      -> HandlerT Management (HandlerT master IO) Text
+        postBookreturnR _ = do
+          liftHandlerT $ addHeader "Content-Type" "application/json"
+          bId <- lookupPostParam "bid"
+          case bId of
+            (Just bid) -> return $ isBookOs bid $ isBookOverData bid $ 
+
 \end{code}
 
->       postBookreturnR,postBookrenewR :: Yesod master
->              => Text
->              -> HandlerT Management (HandlerT master IO) Text
->       postBookreturnR  = undefined
->       postBookrenewR = undefined
+处理续借的图书。
+\begin{code}
+        postBookrenewR :: Yesod master
+                       => Text
+                       -> HandlerT Management (HandlerT master IO) Text
+        postBookrenewR = undefined
+\end{code}
+
 
 实现 YesodSubDispatch
 \begin{code}
