@@ -170,7 +170,7 @@ YrarbilBackend 实现 Yesod 类型类。
           isAuthorized _ _ = getAuthTidk
 \end{code}
 post、get 获得 tidk 的函数。
-\begin{code｝
+\begin{code}
         postAuthTidk,getAuthTidk :: HandlerT YrarbilBackEnd IO AuthResult
         postAuthTidk  = do
           tidk' <- lookupPostParam "tidk"
