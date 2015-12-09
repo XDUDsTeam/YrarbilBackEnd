@@ -99,7 +99,21 @@ Yesod 路由表。
         /1daa62b/#Text SubsiteAR Auther getAuther
         /a3cab3a/#Text SubsiteMR Management getManagement
         |]
+\end{code}
+YrarbilBackend 实现 Yesod 类型类。
+\begin{code}
         instance Yesod YrarbilBackEnd where
+\end{code}
+设置 错误句柄 的函数。
+\begin{description}
+\item[NotFound] 404，找不见页面。
+\item[NotAuthenticated] 没有权限。
+\item[PermissionDenied] 没有权限。
+\item[InvalidArgs] 参数错误。
+\item[BadMethod] HTTP 请求方式错误。
+\item[InternalError] 交互错误。
+\end{description}
+\begin{code}
           errorHandler NotFound= selectRep $ provideRep $ do
             liftIO $ threadDelay 10000000
             liftHandlerT $ addHeader "Content-Type" "application/json"
@@ -145,13 +159,18 @@ Yesod 路由表。
               , "reason" .= ("InternalError" ::Text)
               , "msg" .= t
               ]
+\end{code}
+访问权限设置。
+\begin{code}
           isAuthorized HomeR  _ = return Authorized
           isAuthorized (SubsiteVR _) _ = return Authorized
           isAuthorized (SubsiteAR _ (AdmininR _ _)) _ = return Authorized
           isAuthorized (SubsiteAR _ (ReaderinR _ _)) _ = return Authorized
           isAuthorized (SubsiteAR _ _) _ = postAuthTidk
           isAuthorized _ _ = getAuthTidk
-
+\end{code}
+post、get 获得 tidk 的函数。
+\begin{code｝
         postAuthTidk,getAuthTidk :: HandlerT YrarbilBackEnd IO AuthResult
         postAuthTidk  = do
           tidk' <- lookupPostParam "tidk"
