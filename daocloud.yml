@@ -1,7 +1,7 @@
 image: daocloud/ci-gcc:5
 
 env:
-  - CABALVER=1.22 GHCVER=7.10.2
+  - CABALVER=1.22.6 GHCVER=7.10.2
 
 install:
   - add-apt-repository -y ppa:hvr/ghc
@@ -27,5 +27,7 @@ install:
   - cabal install time
   - cabal install pureMD5
   - cabal install SHA
+before_script:
+  - which cabal
 script:
   - cabal install
