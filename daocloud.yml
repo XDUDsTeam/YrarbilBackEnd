@@ -6,9 +6,10 @@ env:
 install:
   - add-apt-repository -y ppa:hvr/ghc
   - apt-get update
-  - apt-get -y install cabal-install-$CABALVER ghc-$GHCVER
+  - apt-get -y install cabal-install-$CABALVER ghc-$GHCVER postgresql-9.4.5
   - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
   - cabal sandbox init
+  - cabal update
   - cabal install yesod
   - cabal install yesod-auth
   - cabal install monad-logger
