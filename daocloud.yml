@@ -28,6 +28,7 @@ install:
   - cabal install pureMD5
   - cabal install SHA
 before_script:
+  - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
   - echo $PATH
   - which cabal
 script:
