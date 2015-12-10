@@ -51,7 +51,7 @@ extra-source-files:  README.md
 cabal-version:       >=1.10
 
 
-executable ybe
+executable ybe.bin
   main-is:             Main.lhs
 
   -- Modules included in this executable, other than Main.
@@ -83,3 +83,4 @@ executable ybe
 
   -- Base language which the package is written in.
   default-language:    Haskell2010
+  ghc-options: -Wall -O2
