@@ -25,7 +25,7 @@ install:
   - cabal install resourcet
   - cabal install blaze-html
   - cabal install time
-  - cabal install puerMD5
+  - cabal install pureMD5
   - cabal install SHA
 script:
   - cabal install
