@@ -10,7 +10,11 @@ RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-k
 RUN apt-get update
 RUN apt-get -y install postgresql-9.4
 RUN cabal update
-RUN cd /src && cabal install -j9
+RUN cd /src && cabal install yesod -j9
+RUN cd /src && cabal install persistent-postgresql -j9
+RUN cd /src && cabal install SHA
+RUN cd /src && cabal install pureMD5
+RUN cd /src && cabal install 
 RUN ls /src/.cabal-sandbox/
 RUN ls /src/.cabal-sandbox/bin/
 RUN cp /src/.cabal-sandbox/bin/ybe.bin /usr/bin
