@@ -32,4 +32,6 @@ before_script:
   - echo $PATH
   - which cabal
 script:
+  - echo $PATH 
+  - which cabal
   - cabal install
