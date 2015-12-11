@@ -10,6 +10,11 @@ RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-k
 RUN apt-get update
 RUN apt-get -y install postgresql-9.4
 RUN cabal update
-RUN bash /src/Dockerfile.sh
+RUN cd /src && cabal install -j9
+RUN ls /src/.cabal-sandbox/
+RUN ls /src/.cabal-sandbox/bin/
+RUN cp /src/.cabal-sandbox/bin/ybe.bin /usr/bin
+RUN mkdir /etc/YrarbilBackend
+RUN echo '{"host":"localhost","dbname":"postgres","user":"qinka","password":"null","port":"2999"}' > /etc/YrarbilBackend/sqlconfig.json
 EXPORT 3000
 CMD ybe.bin /etc/yrarbilbackend/sqlconfig.json
