@@ -1,6 +1,8 @@
 pwd
 ls
 cd src
+pwd
+ls
 cabal sandbox init
 cabal install -j9
 cd .cabal-sandbox/bin/
