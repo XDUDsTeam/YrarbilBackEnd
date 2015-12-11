@@ -32,6 +32,7 @@ before_script:
   - echo $PATH
   - which cabal
 script:
+  - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
   - echo $PATH 
   - which cabal
   - cabal install
