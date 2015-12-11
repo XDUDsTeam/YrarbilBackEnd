@@ -9,7 +9,7 @@ install:
   - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
   - apt-get update
   - apt-get -y install cabal-install-$CABALVER ghc-$GHCVER postgresql-9.4
-  - export PATHU=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
+  - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
   - cabal sandbox init
   - cabal update
   - cabal install yesod -j9
