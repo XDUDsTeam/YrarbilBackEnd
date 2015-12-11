@@ -1,14 +1,12 @@
-FROM ubuntu
+FROM index.docker.io/library/haskell:7.10.2
 MAINTAINER qinka
-RUN add-apt-repository -y ppa:hvr/ghc
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 RUN apt-get update
-RUN apt-get -y install cabal-install-$CABALVER ghc-$GHCVER postgresql-9.4
-RUN export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
+RUN apt-get -y install postgresql-9.4
 RUN cabal sandbox init
 RUN cabal update
-RUN cabal install
+RUN cabal install -j9
 RUN ls -a
 ADD .cabal-sandbox/YrarbilBackEnd/ybe.bin /usr/bin
 EXPORT 3000
