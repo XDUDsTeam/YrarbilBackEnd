@@ -6,7 +6,6 @@ ls
 cabal help
 cabal help sandbox
 cabal help install
-cabal sandbox init
 cabal install -j9
 cd .cabal-sandbox/bin/
 ls -a
