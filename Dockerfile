@@ -1,7 +1,7 @@
 FROM index.docker.io/library/haskell:7.10.2
 MAINTAINER qinka
 RUN apt-get update
-RUN apt-get install wget
+RUN apt-get -y install wget
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 RUN apt-get update
