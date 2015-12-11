@@ -1,5 +1,6 @@
 pwd
-ls -a .
+ls
+cd src
 cabal sandbox init
 cabal install -j9
 cd .cabal-sandbox/bin/
