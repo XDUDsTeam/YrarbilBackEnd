@@ -288,7 +288,7 @@ Persistent \& PostgreSQL
           liftHandlerT $ addHeader "Content-Type" "application/json"
           bId <- lookupPostParam "bid"
           case bId of
-            (Just bid) -> isBookOs bid $ isBookOverData bid $ undefined
+            (Just bid') -> let bid = read $ show bid' in isBookOs bid $ isBookOverData bid $ undefined
 
 \end{code}
 
