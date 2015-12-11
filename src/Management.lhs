@@ -288,7 +288,17 @@ Persistent \& PostgreSQL
           liftHandlerT $ addHeader "Content-Type" "application/json"
           bId <- lookupPostParam "bid"
           case bId of
-            (Just bid) -> return $ isBookOs bid $ isBookOverData bid $ 
+            (Just bid') -> let bid = read $ show bid' in isBookOs bid $ isBookOverData bid $ returnBook bid
+
+          where
+            returnBook :: Yesod master
+                       => Int
+                       -> HandlerT Management (HandlerT master IO) Text
+            returnBook bid = do
+              key <- liftHandlerT $ runDB $ selectKeysList [BookoptBbc ==. bid,BookoptIsrt ==. False] []
+              liftHandlerT $ runDB $ update (head key) [BookoptIsrt =. True]
+              returnTJson $ object
+                [ "status" .= ("success" :: String)]
 
 \end{code}
 
