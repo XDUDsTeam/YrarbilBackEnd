@@ -20,4 +20,4 @@ RUN mkdir /etc/YrarbilBackend
 RUN echo '{"host":"localhost","dbname":"postgres","user":"qinka","password":"null","port":"2999"}' > /etc/YrarbilBackend/sqlconfig.json
 RUN rm -r src
 EXPOSE 3000
-CMD ybe.bin /etc/yrarbilbackend/sqlconfig.json
+CMD ybe.bin /etc/YrarbilBackend/sqlconfig.json
