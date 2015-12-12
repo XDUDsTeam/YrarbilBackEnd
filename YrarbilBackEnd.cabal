@@ -10,7 +10,7 @@ name:                YrarbilBackEnd
 -- PVP summary:      +-+------- breaking API changes
 --                   | | +----- non-breaking API additions
 --                   | | | +--- code changes with no API change
-version:             0.1.0.0
+version:             0.0.3.40
 
 -- A short (one-line) description of the package.
 synopsis:            The back-end of yrarbil.
@@ -36,7 +36,7 @@ author:              Qinka
 maintainer:          qinka@live.com
 
 -- A copyright notice.
-copyright: 2015 XDUDsTeam
+copyright:          2015 XDUDsTeam
 
 category:            Web
 
@@ -51,7 +51,11 @@ extra-source-files:  README.md
 cabal-version:       >=1.10
 
 
-executable ybe.bin
+flag version-limit
+  description: To limit the verions of the packages depended.
+  default: True
+
+executable yb.bin
   main-is:             Main.lhs
 
   -- Modules included in this executable, other than Main.
@@ -61,22 +65,85 @@ executable ybe.bin
   -- other-extensions:
 
   -- Other library packages from which modules are imported.
-  build-depends:       base >=4.8 && <4.9
-                     , yesod
-                     , yesod-auth
-                     , monad-logger
-                     , aeson
-                     , bytestring
-                     , text
-                     , persistent
-                     , persistent-template
-                     , persistent-postgresql
-                     , transformers
-                     , resourcet
-                     , blaze-html
-                     , time
-                     , pureMD5
-                     , SHA
+
+  build-depends: base >=4.8 && <4.9
+
+  build-depends: base >=4.8 && <4.9
+
+  if flag(version-limit)
+    build-depends:     yesod >=1.4.1 && <= 1.6
+  else
+    build-depends:     yesod
+
+  if flag(version-limit)
+    build-depends:     yesod-auth == 1.4.*
+  else
+    build-depends:     yesod-auth
+
+  if flag(version-limit)
+    build-depends:     monad-logger >= 0.3.10 && < 0.4
+  else
+    build-depends:     monad-logger
+
+  if flag(version-limit)
+    build-depends:     aeson >= 0.8 && < 0.13
+  else
+    build-depends:     aeson
+
+  if flag(version-limit)
+    build-depends:     bytestring >= 0.10 && < 0.13
+  else
+    build-depends:     bytestring
+
+  if flag(version-limit)
+    build-depends:     text >= 1.2 && < 1.4
+  else
+    build-depends:     text
+
+  if flag(version-limit)
+    build-depends:     persistent >= 2.1 && <2.3
+  else
+    build-depends:     persistent
+
+  if flag(version-limit)
+    build-depends:     persistent-template >= 2.1 && <2.3
+  else
+    build-depends:     persistent-template
+
+  if flag(version-limit)
+    build-depends:     persistent-postgresql >= 2.1 && <2.3
+  else
+    build-depends:     persistent-postgresql
+
+  if flag(version-limit)
+    build-depends:     transformers >= 0.2.2 && < 1
+  else
+    build-depends:     transformers
+
+  if flag(version-limit)
+    build-depends:     resourcet >= 1 && <2
+  else
+    build-depends:     resourcet
+
+  if flag(version-limit)
+    build-depends:     blaze-html >= 0.5 && <1
+  else
+    build-depends:     blaze-html
+
+  if flag(version-limit)
+    build-depends:     time >= 1.4 && < 1.10
+  else
+    build-depends:     time
+
+  if flag(version-limit)
+    build-depends:     pureMD5 >= 2 && <2.4
+  else
+    build-depends:     pureMD5
+
+  if flag(version-limit)
+    build-depends:     SHA >= 1.5 && < 2.2
+  else
+    build-depends:     SHA
 
   -- Directories containing source files.
   hs-source-dirs:      src

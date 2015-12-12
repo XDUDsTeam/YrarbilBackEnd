@@ -15,7 +15,7 @@ RUN cd /src && cabal install persistent-postgresql -j9
 RUN cd /src && cabal install SHA
 RUN cd /src && cabal install pureMD5
 RUN cd /src && cabal install
-RUN cp /src/.cabal-sandbox/bin/ybe.bin /usr/bin
+RUN cp /src/.cabal-sandbox/bin/yb.bin /usr/bin
 RUN rm -r src
 EXPOSE 3000
 CMD echo {\"host\":\"$POSTGRESQL_PORT_5432_TCP_ADDR\"\,\"dbname\":\"$POSTGRESQL_INSTANCE_NAME\"\,\"user\":\"$POSTGRESQL_USERNAME\"\,\"password\"\:\"$POSTGRESQL_PASSWORD\"\,\"port\":\"$POSTGRESQL_PORT_5432_TCP_PORT\"\,\"connectionLmt\":10} | ybe.bin

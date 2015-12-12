@@ -42,9 +42,10 @@ monad-logger。
 \begin{code}
         import    Control.Monad.Logger
 \end{code}
-导入 Sql 设置。
+导入 Sql 设置与其他配置。
 \begin{code}
         import    Main.SqlConnection
+        import    Main.Config
 \end{code}
 导入子站-Version（Information）。
 \begin{code}
@@ -60,7 +61,7 @@ monad-logger。
 \end{code}
 Data.Text
 \begin{code}
-        import Data.Text.Lazy
+        import Data.Text.Lazy hiding (null)
 \end{code}
 设置延迟
 \begin{code}
@@ -107,11 +108,6 @@ YrarbilBackend 实现 Yesod 类型类。
 设置 错误句柄 的函数。
 \begin{description}
 \item[NotFound] 404，找不见页面。
-\item[NotAuthenticated] 没有权限。
-\item[PermissionDenied] 没有权限。
-\item[InvalidArgs] 参数错误。
-\item[BadMethod] HTTP 请求方式错误。
-\item[InternalError] 交互错误。
 \end{description}
 \begin{code}
           errorHandler NotFound= selectRep $ provideRep $ do
@@ -121,6 +117,9 @@ YrarbilBackend 实现 Yesod 类型类。
               [ "status" .= ("error" ::Text)
               , "reason" .= ("not found" ::Text)
               ]
+\end{code}
+\item[NotAuthenticated] 没有权限。
+\begin{code}
           errorHandler NotAuthenticated = selectRep $ provideRep $ do
             liftIO $ threadDelay 10000000
             liftHandlerT $ addHeader "Content-Type" "application/json"
@@ -128,6 +127,9 @@ YrarbilBackend 实现 Yesod 类型类。
               [ "status" .= ("error" ::Text)
               , "reason" .= ("not logged in" ::Text)
               ]
+\end{code}
+\item[PermissionDenied] 没有权限。
+\begin{code}
           errorHandler (PermissionDenied msg) = selectRep$ provideRep $ do
             liftIO $ threadDelay 10000000
             liftHandlerT $ addHeader "Content-Type" "application/json"
@@ -136,6 +138,11 @@ YrarbilBackend 实现 Yesod 类型类。
               , "reason" .= ("PermissionDenied" ::Text)
               , "msg" .= msg
               ]
+\end{code}
+\item[InvalidArgs] 参数错误。
+\item[BadMethod] HTTP 请求方式错误。
+\item[InternalError] 交互错误。
+\begin{code}
           errorHandler (InvalidArgs ia) = selectRep $ provideRep $ do
             liftIO $ threadDelay 10000000
             liftHandlerT $ addHeader "Content-Type" "application/json"
@@ -144,6 +151,9 @@ YrarbilBackend 实现 Yesod 类型类。
               , "reason" .= ("InvalidArgs" ::Text)
               , "args" .= ia
               ]
+\end{code}
+\item[BadMethod] HTTP 请求方式错误。
+\begin{code}
           errorHandler (BadMethod _) = selectRep $ provideRep $ do
             liftIO $ threadDelay 10000000
             liftHandlerT $ addHeader "Content-Type" "application/json"
@@ -151,6 +161,9 @@ YrarbilBackend 实现 Yesod 类型类。
               [ "status" .= ("error" ::Text)
               , "reason" .= ("BadMethod" ::Text)
               ]
+\end{code}
+\item[InternalError] 交互错误。
+\begin{code}
           errorHandler (InternalError t) = selectRep $ provideRep $ do
             liftIO $ threadDelay 10000000
             liftHandlerT $ addHeader "Content-Type" "application/json"
@@ -208,8 +221,17 @@ post、get 获得 tidk 的函数。
 \begin{code}
         getHomeR :: HandlerT YrarbilBackEnd IO Html
         getHomeR = do
+          right <- liftHandlerT $ isUserAgnetRight
           defaultLayout [whamlet|
-                Hello,wordld!
+            $doctype 5
+            <h1> Yrarbil Backend "Home"
+            $if right
+              <h3> 你正在使用一个正常的浏览器 或 工具 访问 或 获取信息
+            $else
+              <h2> 你正在使用一个老掉牙，恶心，破旧，与现代社会不相符的浏览器或工具 访问我们的后端。有能力换个好的！
+            <br>
+            <p> 欢迎访问 Yrarbil 的后端，当前版本为测试版本。没事别调戏，管理员可以看见您的 IP 地址等信息。
+              同时我们保留通过一切合法形式维护我们权益的权利。
             |]
 \end{code}
 
