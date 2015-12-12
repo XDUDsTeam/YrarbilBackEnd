@@ -4,7 +4,7 @@ ADD . /src
 RUN ls -a /src
 RUN cd /src && cabal sandbox init
 RUN mkdir /etc/YrarbilBackend
-RUN echo '{"host":"$POSTGRESQL_PORT_5432_TCP_ADDR","dbname":"$POSTGRESQL_INSTANCE_NAME","user":"$POSTGRESQL_USERNAME","password":"$POSTGRESQL_PASSWORD","port":"$POSTGRESQL_PORT_5432_TCP_PORT","connectionLmt":10}' > /etc/YrarbilBackend/sqlconfig.json
+RUN echo {"host":"$POSTGRESQL_PORT_5432_TCP_ADDR","dbname":"$POSTGRESQL_INSTANCE_NAME","user":"$POSTGRESQL_USERNAME","password":"$POSTGRESQL_PASSWORD","port":"$POSTGRESQL_PORT_5432_TCP_PORT","connectionLmt":10} > /etc/YrarbilBackend/sqlconfig.json
 RUN cat /etc/YrarbilBackend/sqlconfig.json
 RUN apt-get update
 RUN apt-get -y install wget
