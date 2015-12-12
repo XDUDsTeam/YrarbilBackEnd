@@ -14,11 +14,10 @@ RUN cd /src && cabal install yesod -j9
 RUN cd /src && cabal install persistent-postgresql -j9
 RUN cd /src && cabal install SHA
 RUN cd /src && cabal install pureMD5
-RUN cd /src && cabal install 
-RUN ls /src/.cabal-sandbox/
-RUN ls /src/.cabal-sandbox/bin/
+RUN cd /src && cabal install
 RUN cp /src/.cabal-sandbox/bin/ybe.bin /usr/bin
 RUN mkdir /etc/YrarbilBackend
 RUN echo '{"host":"localhost","dbname":"postgres","user":"qinka","password":"null","port":"2999"}' > /etc/YrarbilBackend/sqlconfig.json
-EXPORT 3000
+RUN rm -r src
+EXPOSE 3000
 CMD ybe.bin /etc/yrarbilbackend/sqlconfig.json
