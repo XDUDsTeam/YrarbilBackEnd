@@ -34,5 +34,5 @@ module Main.Config
 是否是“认证”的客户端。
 \begin{code}
         isUserAgnetRight :: MonadResourceBase m => HandlerT site m Bool
-        isUserAgnetRight = liftHandlerT (lookupHeaders "User-Agent") >>= (\xs -> return $ or $ map (\x-> elem x xs) [])          
+        isUserAgnetRight = liftHandlerT (lookupHeaders "User-Agent") >>= (\xs -> return $ or $ map (\x-> elem x xs) ["YrarbilBackend-testclient"])          
 \end{code}
