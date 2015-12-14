@@ -44,7 +44,6 @@ monad-logger。
 \end{code}
 导入 Sql 设置与其他配置。
 \begin{code}
-        import    Main.SqlConnection
         import    Main.Config
 \end{code}
 导入子站-Version（Information）。
