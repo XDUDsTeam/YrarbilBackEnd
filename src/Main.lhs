@@ -107,7 +107,6 @@ YrarbilBackend 实现 Yesod 类型类。
 设置 错误句柄 的函数。
 \begin{description}
 \item[NotFound] 404，找不见页面。
-\end{description}
 \begin{code}
           errorHandler NotFound= selectRep $ provideRep $ do
             liftIO $ threadDelay 10000000
@@ -172,6 +171,7 @@ YrarbilBackend 实现 Yesod 类型类。
               , "msg" .= t
               ]
 \end{code}
+\end{description}
 访问权限设置。
 \begin{code}
           isAuthorized HomeR  _ = return Authorized
