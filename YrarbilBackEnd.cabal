@@ -10,7 +10,7 @@ name:                YrarbilBackEnd
 -- PVP summary:      +-+------- breaking API changes
 --                   | | +----- non-breaking API additions
 --                   | | | +--- code changes with no API change
-version:             0.0.3.40
+version:             0.0.3.60
 
 -- A short (one-line) description of the package.
 synopsis:            The back-end of yrarbil.
@@ -38,7 +38,7 @@ maintainer:          qinka@live.com
 -- A copyright notice.
 copyright:          2015 XDUDsTeam
 
-category:            Web
+category:            Web,Backend
 
 build-type:          Simple
 
@@ -46,15 +46,43 @@ build-type:          Simple
 -- README.
 extra-source-files:  README.md
                    , src/preamble.tex
+                   , src/backend.tex
 
 -- Constraint on the version of Cabal needed to build this package.
 cabal-version:       >=1.10
 
-
+-- ?? ?????????
 flag version-limit
   description: To limit the verions of the packages depended.
   default: True
 
+-- ????? ?  Daocloud ???
+flag daocloud-run
+  description: ?? ???????????????
+  default: False
+
+-- ?? ????????
+flag normal-run
+  description: ????????????
+  default: True
+
+-- ???????
+if flag(normal-run)
+  executable yb.normal.start
+    main-is:              NormalMain.lhs
+    hs-source-dirs:       start
+    default-language:     Haskell2010
+    build-depends:        base >= 4.8 && < 4.9
+
+-- ???????
+if flag(daocloud-run)
+  executable yb.daocloud.start
+    main-is:              DaocloudMain.lhs
+    hs-source-dirs:       start
+    default-language:     Haskell2010
+    build-depends:        base >= 4.8 && < 4.9
+
+-- ?????
 executable yb.bin
   main-is:             Main.lhs
 
@@ -65,8 +93,6 @@ executable yb.bin
   -- other-extensions:
 
   -- Other library packages from which modules are imported.
-
-  build-depends: base >=4.8 && <4.9
 
   build-depends: base >=4.8 && <4.9
 
