@@ -14,8 +14,8 @@ RUN cd /src && cabal install yesod -j9
 RUN cd /src && cabal install persistent-postgresql -j9
 RUN cd /src && cabal install SHA
 RUN cd /src && cabal install pureMD5
-RUN cd /src && cabal install
+RUN cd /src && cabal install --flags="docker-launch -normal-launch"
 RUN cp /src/.cabal-sandbox/bin/* /usr/bin
 RUN rm -r src
 EXPOSE 3000
-CMD yb.launch
+CMD yb.docker.launch
