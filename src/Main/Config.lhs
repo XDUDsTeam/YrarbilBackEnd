@@ -117,14 +117,13 @@ module Main.Config
           return $ decode $ fromString $ concat json
 
         getIn :: IO [String]
-        getIn = hIsEOF h  >>= (\is ->
+        getIn = isEOF >>= (\is ->
           if is
             then return []
             else do
-              r <- hGetLine h
-              getIn h>>= return.(r:))
-          where
-            h = stdin
+              r <- getLine
+              getIn >>= return.(r:)
+          )
 
 \end{code}
 生成 所需数据
