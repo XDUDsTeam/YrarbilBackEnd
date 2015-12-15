@@ -129,9 +129,11 @@ module Main.Config
 生成 所需数据
 \begin{code}
         toConfig :: Maybe Config -> Maybe (DBI.ByteString,Int,Int)
-        toConfig Config{..} = (s,c,exePort)
+        toConfig Config{..} = case toConConfig sqlConfig of
+          Just (s,c) -> Just (s,c,exePort)
+          _ -> Nothing
           where
-            (s,c) = toConConfig sqlConfig
+            x = toConConfig sqlConfig
             toConConfig SqlConn{..} = (toStrict $
               fromString $ "host=\'"++hostName
                      ++ "\' port=\'"++port
