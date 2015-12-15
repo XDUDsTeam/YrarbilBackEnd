@@ -10,7 +10,7 @@ name:                YrarbilBackEnd
 -- PVP summary:      +-+------- breaking API changes
 --                   | | +----- non-breaking API additions
 --                   | | | +--- code changes with no API change
-version:             0.0.3.60
+version:             0.0.4.9
 
 -- A short (one-line) description of the package.
 synopsis:            The back-end of yrarbil.
@@ -67,7 +67,7 @@ flag normal-run
   default: True
 
 -- ???????
-if flag(normal-run)
+if flag(normal-run){
   executable yb.normal.start
     main-is:              NormalMain.lhs
     hs-source-dirs:       start
@@ -77,9 +77,10 @@ if flag(normal-run)
       build-depends:      process >= 1.3 && < 1.7
     else
       build-depends:      process
+}
 
 -- ???????
-if flag(daocloud-run)
+if flag(daocloud-run){
   executable yb.daocloud.start
     main-is:              DaocloudMain.lhs
     hs-source-dirs:       start
@@ -89,6 +90,7 @@ if flag(daocloud-run)
       build-depends:      process >= 1.3 && < 1.7
     else
       build-depends:      process
+}
 
 -- ?????
 executable yb.bin
