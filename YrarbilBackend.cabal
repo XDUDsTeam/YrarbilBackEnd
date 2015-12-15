@@ -79,12 +79,12 @@ executable yb.launch
   else
     build-depends:          aeson
 -- 确定使用哪个 launch
-  if flag(daocloud-run)
-    main-is: DaocloudMain.lhs
-  else if flag(normal-run)
-    main-is: NormalMain.lhs
-  else
-    main-is: EmptyMain.lhs
+  if flag(daocloud-run){
+    main-is: DaocloudMain.lhs}
+  else { if flag(normal-run) {
+    main-is: NormalMain.lhs}
+  else {
+    main-is: EmptyMain.lhs}}
 
 
 executable yb.bin
