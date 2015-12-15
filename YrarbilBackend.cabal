@@ -10,7 +10,7 @@ name:                YrarbilBackEnd
 -- PVP summary:      +-+------- breaking API changes
 --                   | | +----- non-breaking API additions
 --                   | | | +--- code changes with no API change
-version:             0.0.4.9
+version:             0.0.4.12
 
 -- A short (one-line) description of the package.
 synopsis:            The back-end of yrarbil.
@@ -51,48 +51,42 @@ extra-source-files:  README.md
 -- Constraint on the version of Cabal needed to build this package.
 cabal-version:       >=1.10
 
--- ?? ?????????
+-- 限制包的版本
 flag version-limit
   description: To limit the verions of the packages depended.
   default: True
 
--- ????? ?  Daocloud ???
+-- 使用Docker或道客云的启动器
 flag daocloud-run
-  description: ?? ???????????????
+  description: 针对于 运行于 Docker 容器内，且运行于道客云的启动器。，具有第一优先级。
   default: False
 
--- ?? ????????
 flag normal-run
-  description: ????????????
+  description: 使用通用 launch 启动
   default: True
 
--- ???????
-if flag(normal-run){
-  executable yb.normal.start
-    main-is:              NormalMain.lhs
-    hs-source-dirs:       start
-    default-language:     Haskell2010
-    build-depends:        base >= 4.8 && < 4.9
-    if flag(version-lmt)
-      build-depends:      process >= 1.3 && < 1.7
-    else
-      build-depends:      process
-}
 
--- ???????
-if flag(daocloud-run){
-  executable yb.daocloud.start
-    main-is:              DaocloudMain.lhs
-    hs-source-dirs:       start
-    default-language:     Haskell2010
-    build-depends:        base >= 4.8 && < 4.9
-    if flag(version-lmt)
-      build-depends:      process >= 1.3 && < 1.7
-    else
-      build-depends:      process
-}
+executable yb.launch
+  hs-source-dirs:           launch
+  default-language:         Haskell2010
+  build-depends:            base >= 4.8 && < 4.9
+  if flag(version-lmt)
+    build-depends:																			process >= 1.3 && <1.7
+  else
+    build-depends:																			process
+  if flag(version-limt)
+    build-depends:          aeson >= 0.8 && < 0.13
+  else
+    build-depends:          aeson
+-- 确定使用哪个 launch
+  if flag(daocloud-run)
+    main-is: DaocloudMain.lhs
+  else if flag(normal-run)
+    main-is: NormalMain.lhs
+  else
+    main-is: EmptyMain.lhs
 
--- ?????
+
 executable yb.bin
   main-is:             Main.lhs
 

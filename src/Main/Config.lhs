@@ -20,8 +20,9 @@
 \begin{code}
 module Main.Config
       ( isUserAgnetRight
-      , getSqlConn
-      , toConConfig
+      , getConfig
+      , toConfigT
+      , Config(..)
       , SqlConn(..)
       ) where
 \end{code}
@@ -50,10 +51,6 @@ module Main.Config
 \begin{code}
         import Data.Aeson
 \end{code}
-获取参数。
-\begin{code}
-        import System.Environment(getArgs)
-\end{code}
 使用输入与输出。
 \begin{code}
         import System.IO
@@ -69,7 +66,20 @@ module Main.Config
 \end{code}
 
 
-\subsection{全局函数}
+\subsection{全局设置}
+\begin{code}
+        data Config = Config
+          { sqlConfig :: SqlConn
+          , exePort :: Int
+          }
+\end{code}
+实现 FromJSON 类型类。
+\begin{code}
+        instance FromJSON Config where
+          parseJSON (Object v) = Config
+            <$> v .: "sqlconn"
+            <*> v .: "port"
+\end{code}
 
 \subsection{连接 String}
 %"host=qinka-s.jios.org dbname=postgres user=qinka password=johnjing port=2999"
@@ -86,7 +96,7 @@ module Main.Config
           , connCtr :: Int
           }
 \end{code}
-实现 ToJSON 类型类。
+实现 FromJSON 类型类。
 \begin{code}
         instance FromJSON SqlConn where
           parseJSON (Object v) =
@@ -101,37 +111,36 @@ module Main.Config
 获取设置
 \begin{code}
 
-        getSqlConn :: IO (Maybe SqlConn)
-        getSqlConn = do
-          json <- getHandle>>= getIn
+        getConfig :: IO (Maybe Config)
+        getConfig = do
+          json <- getIn
           return $ decode $ fromString $ concat json
 
-        getIn :: Handle -> IO [String]
-        getIn h = hIsEOF h  >>= (\is ->
+        getIn :: IO [String]
+        getIn = hIsEOF h  >>= (\is ->
           if is
             then return []
             else do
               r <- hGetLine h
               getIn h>>= return.(r:))
+          where
+            h = stdin
 
-        getHandle :: IO Handle
-        getHandle = do
-          args <- getArgs
-          case args of
-            (x:_) -> openFile x ReadMode
-            _ -> return stdin
 \end{code}
-生成 连接字串。
+生成 所需数据
 \begin{code}
-        toConConfig :: Maybe SqlConn -> Maybe (DBI.ByteString,Int)
-        toConConfig (Just SqlConn{..})= Just (toStrict $
-           fromString $ "host=\'"++hostName
-                  ++ "\' port=\'"++port
-                  ++ "\' user=\'"++userName
-                  ++ "\' password=\'"++passWord
-                  ++ "\' dbname=\'"++dbName
-                  ++ "\'",connCtr)
-        toConConfig _ = Nothing
+        toConfig :: Maybe Config -> Maybe (DBI.ByteString,Int,Int)
+        toConfig Config{..} = (s,c,exePort)
+          where
+            (s,c) = toConConfig sqlConfig
+            toConConfig SqlConn{..} = (toStrict $
+              fromString $ "host=\'"++hostName
+                     ++ "\' port=\'"++port
+                     ++ "\' user=\'"++userName
+                     ++ "\' password=\'"++passWord
+                     ++ "\' dbname=\'"++dbName
+                     ++ "\'",connCtr)
+        toConfig _ = Nothing
 
 \end{code}
 

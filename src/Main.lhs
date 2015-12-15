@@ -239,11 +239,11 @@ post、get 获得 tidk 的函数。
 \begin{code}
         main :: IO()
         main = do
-          sqlC <- getSqlConn
+          config <- getConfig
           case toConConfig sqlC of
-            Just (st,lmt) -> do
+            Just (st,lmt,p) -> do
               runStderrLoggingT $ withPostgresqlPool st lmt $
                 \pool ->liftIO $
-                warp 3000 $ YrarbilBackEnd pool (Information pool) (\_->Auther pool) (\_ -> Management pool)
+                warp p $ YrarbilBackEnd pool (Information pool) (\_->Auther pool) (\_ -> Management pool)
             Nothing -> error "error config"
 \end{code}
