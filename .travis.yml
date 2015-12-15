@@ -1,8 +1,19 @@
 # To auto build what we need.
 
+env:
+  - CABALVER=1.22 GHCVER=7.10.2
+
 before_install:
+  - "sudo add-apt-repository -y ppa:hvr/ghc"
   - "sudo apt-get update && sudo apt-get install --no-install-recommends texlive-xetex latex-xcolor texlive-fonts-recommended texlive-latex-extra lmodern texlive-latex-recommended"
   - "sudo apt-get install ttf-wqy-microhei ttf-wqy-zenhei"
+  - "sudo apt-get install ghc-$GHCVER cabal-install-$CABALVER"
+  - "export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH"
+  - "cabal update"
+  - "cabal install yesod"
+  - "cabal install persistent-postgresql"
+  - "cabal install pureMD5"
+  - "cabal install SHA"
 
 
 script:
@@ -10,7 +21,11 @@ script:
   - xelatex BackEnd.tex
   - xelatex BackEnd.tex
   - xelatex BackEnd.tex
-  
+  - cd ..
+  - cabal configure
+  - cabal build
+  - cabal sdist
+
 after_success: |
   if [ -n "$GITHUB_API_KEY" ]; then
     git config --global user.name "travis_auto"
@@ -30,6 +45,8 @@ after_success: |
     pwd
     cp *.pdf $RELPATH
     echo "copy done"
+    cd "$TRAVIS_BUILD_DIR"/dist
+    cp *.tar.gz $RELPATH
     cd $RELPATH
     git add .
     git commit -am"$(date)"
