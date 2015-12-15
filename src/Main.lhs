@@ -240,7 +240,7 @@ post、get 获得 tidk 的函数。
         main :: IO()
         main = do
           config <- getConfig
-          case toConConfig sqlC of
+          case toConfigT config of
             Just (st,lmt,p) -> do
               runStderrLoggingT $ withPostgresqlPool st lmt $
                 \pool ->liftIO $

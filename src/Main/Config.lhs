@@ -40,13 +40,8 @@ module Main.Config
         import Data.String(fromString)
         import Data.ByteString.Lazy(toStrict)
         import qualified Data.ByteString.Internal as DBI
-        import Data.ByteString.Lazy.Internal(ByteString(..))
 \end{code}
 
-使用 ConnectionString。
-\begin{code}
-        import Database.Persist.Postgresql(ConnectionString)
-\end{code}
 处理 JSON
 \begin{code}
         import Data.Aeson
@@ -62,7 +57,7 @@ module Main.Config
 是否是“认证”的客户端。
 \begin{code}
         isUserAgnetRight :: MonadResourceBase m => HandlerT site m Bool
-        isUserAgnetRight = liftHandlerT (lookupHeaders "User-Agent") >>= (\xs -> return $ or $ map (\x-> elem x xs) ["YrarbilBackend-testclient"])          
+        isUserAgnetRight = liftHandlerT (lookupHeaders "User-Agent") >>= (\xs -> return $ or $ map (\x-> elem x xs) ["YrarbilBackend-testclient"])
 \end{code}
 
 
@@ -113,8 +108,8 @@ module Main.Config
 
         getConfig :: IO (Maybe Config)
         getConfig = do
-          json <- getIn
-          return $ decode $ fromString $ concat json
+          j <- getIn
+          return $ decode $ fromString $ concat j
 
         getIn :: IO [String]
         getIn = isEOF >>= (\is ->
@@ -128,12 +123,9 @@ module Main.Config
 \end{code}
 生成 所需数据
 \begin{code}
-        toConfig :: Maybe Config -> Maybe (DBI.ByteString,Int,Int)
-        toConfig Config{..} = case toConConfig sqlConfig of
-          Just (s,c) -> Just (s,c,exePort)
-          _ -> Nothing
+        toConfigT :: Maybe Config -> Maybe (DBI.ByteString,Int,Int)
+        toConfigT (Just Config{..}) = let (s,c) = toConConfig sqlConfig in Just (s,c,exePort)
           where
-            x = toConConfig sqlConfig
             toConConfig SqlConn{..} = (toStrict $
               fromString $ "host=\'"++hostName
                      ++ "\' port=\'"++port
@@ -141,7 +133,6 @@ module Main.Config
                      ++ "\' password=\'"++passWord
                      ++ "\' dbname=\'"++dbName
                      ++ "\'",connCtr)
-        toConfig _ = Nothing
+        toConfigT _ = Nothing
 
 \end{code}
-
