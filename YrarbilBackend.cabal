@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 -- The name of the package.
-name:                YrarbilBackEnd
+name:                YrarbilBackend
 
 -- The package version.  See the Haskell package versioning policy (PVP)
 -- for standards guiding when and how versions should be incremented.
@@ -57,41 +57,95 @@ flag version-limit
   default: True
 
 -- 使用Docker或道客云的启动器
-flag daocloud-run
+flag docker-launch
   description: 针对于 运行于 Docker 容器内，且运行于道客云的启动器。，具有第一优先级。
-  default: False
+  default: True
 
-flag normal-run
+flag normal-launch
   description: 使用通用 launch 启动
   default: True
 
 
 executable yb.launch
   hs-source-dirs:           launch
+                          , lib
+  main-is:                  Main.lhs
   default-language:         Haskell2010
+  other-modules:            Yrarbil.Backend.Config
   build-depends:            base >= 4.8 && < 4.9
   if flag(version-limit)
-    build-depends:																			process >= 1.3 && <1.7
+    build-depends:				  process  >= 1 && < 2
   else
-    build-depends:																			process
+    build-depends:					process
   if flag(version-limit)
     build-depends:          aeson >= 0.8 && < 0.13
   else
     build-depends:          aeson
--- 确定使用哪个 launch
-  if flag(daocloud-run)
-    main-is: DaocloudMain.lhs
+  if flag(normal-launch)
+    buildable:              True
   else
-    if flag(normal-run)
-      main-is: NormalMain.lhs
-    else
-      main-is: EmptyMain.lhs
+    buildable:              False
+  if flag(version-limit)
+    build-depends:     bytestring >= 0.10 && < 0.13
+  else
+    build-depends:     bytestring
+  ghc-options: -Wall -O2
+
+executable yb.docker.launch
+  hs-source-dirs:           launch.docker
+                          , lib
+  main-is:                  Main.lhs
+  default-language:         Haskell2010
+  other-modules:            Yrarbil.Backend.Config
+  build-depends:            base >= 4.8 && < 4.9
+  if flag(version-limit)
+    build-depends:				  process  >= 1 && < 2
+  else
+    build-depends:					process
+  if flag(version-limit)
+    build-depends:          aeson >= 0.8 && < 0.13
+  else
+    build-depends:          aeson
+  if flag(docker-launch)
+    buildable:              True
+  else
+    buildable:              False
+  if flag(version-limit)
+    build-depends:     bytestring >= 0.10 && < 0.13
+  else
+    build-depends:     bytestring
+  ghc-options: -Wall -O2
+
 
 executable yb.bin
   main-is:             Main.lhs
 
   -- Modules included in this executable, other than Main.
-  -- other-modules:
+  other-modules:       AddDel
+                     , AddDel.Data
+                     , Appointment
+                     , Appointment.Data
+                     , Auth
+                     , Auth.Data
+                     , Common
+                     , ConstFinder
+                     , ConstFinder.Data
+                     , ConstFinder.Const
+                     , ConstFinder.Const.TH
+                     -- , DataAnalysisCom
+                     , DataAnalysisCom.Data
+                     , Index
+                     , Index.Data
+                     , Info
+                     , Info.Data
+                     , InfoFinder
+                     , InfoFinder.Data
+                     , Main
+                     , Main.Config
+                     , Management
+                     , Management.Data
+                     , SafeS
+                     , Yrarbil.Backend.Config
 
   -- LANGUAGE extensions used by modules in this package.
   -- other-extensions:
@@ -177,6 +231,7 @@ executable yb.bin
 
   -- Directories containing source files.
   hs-source-dirs:      src
+                     , lib
 
   -- Base language which the package is written in.
   default-language:    Haskell2010

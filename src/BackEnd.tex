@@ -27,9 +27,9 @@
   主文件提供了 程序入口与 Yesod 的基本所需的内容。
   \input{Main.lhs}
 
-  \section[设置载入文件 Main/SqlConnection.lhs文件]{Main/SqlConnection.lhs}
-  提供了对数据库连接设置的读取。
-  \input{Main/SqlConnection.lhs}
+  \section[设置载入文件 Main/Config.lhs文件]{Main/Config.lhs}
+  提供了对程序设置的读取。
+  \input{Main/Config.lhs}
 
   \section[子站-提供版本信息 Info.lhs文件]{Info.lhs}
   提供了子站-提供版本的信息。
@@ -37,14 +37,24 @@
 
   \section[辅助Info.lhs文件]{Info/Data.lhs}
   \input{Info/Data.lhs}
-  
+
   \section[认证]{Auth.lhs}
   \input{Auth.lhs}
-  
+
   \section[辅助Auth.lhs]{Auth/Data.lhs}
   \input{Auth/Data.lhs}
 
+  \section{Launcher:用于道客云}
+  用于在道客云等 Docker 容器中启动。
+  \input{../launch/DaocloudMain.lhs}
+  \section{Launcher:通用启动器}
+  用于通用环境的启动。
+  \input{../launch/NormalMain.lhs}
+  \section{Launcher:无启动器}
+  空的启动器，启动时不会做任何事。
+  \input{../launch/EmptyMain.lhs}
 
-  
+
+
 
 \end{document}
