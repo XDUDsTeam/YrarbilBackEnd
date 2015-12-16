@@ -64,7 +64,7 @@ module Yrarbil.Backend.Config
 \end{code}
 
 \subsection{连接 String}
-%"host=qinka-s.jios.org dbname=postgres user=qinka password=johnjing port=2999"
+"host=qinka-s.jios.org dbname=postgres user=qinka password=johnjing port=2999"
 连接 String 由 主机名
 \footnote{域名或者端口}
 数据库名，用户名，密码，端口。

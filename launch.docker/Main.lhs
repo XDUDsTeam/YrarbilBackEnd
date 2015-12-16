@@ -54,7 +54,7 @@ IO
 \end{code}
 \subsection{写入函数}
 将特定环境变量等写入后端主函数的标准输入流。
-\beign{code}
+\begin{code}
          getConfig :: IO Config
          getConfig = do
            ybPort <- getEnv "YRARBIL_BACKEND_PORT"

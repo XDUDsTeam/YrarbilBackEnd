@@ -107,6 +107,7 @@ YrarbilBackend 实现 Yesod 类型类。
 设置 错误句柄 的函数。
 \begin{description}
 \item[NotFound] 404，找不见页面。
+\end{description}
 \begin{code}
           errorHandler NotFound= selectRep $ provideRep $ do
             liftIO $ threadDelay 10000000
@@ -116,7 +117,9 @@ YrarbilBackend 实现 Yesod 类型类。
               , "reason" .= ("not found" ::Text)
               ]
 \end{code}
+\begin{description}
 \item[NotAuthenticated] 没有权限。
+\end{description}
 \begin{code}
           errorHandler NotAuthenticated = selectRep $ provideRep $ do
             liftIO $ threadDelay 10000000
@@ -126,7 +129,9 @@ YrarbilBackend 实现 Yesod 类型类。
               , "reason" .= ("not logged in" ::Text)
               ]
 \end{code}
+\begin{description}
 \item[PermissionDenied] 没有权限。
+\end{description}
 \begin{code}
           errorHandler (PermissionDenied msg) = selectRep$ provideRep $ do
             liftIO $ threadDelay 10000000
@@ -137,9 +142,9 @@ YrarbilBackend 实现 Yesod 类型类。
               , "msg" .= msg
               ]
 \end{code}
+\begin{description}
 \item[InvalidArgs] 参数错误。
-\item[BadMethod] HTTP 请求方式错误。
-\item[InternalError] 交互错误。
+\end{description}
 \begin{code}
           errorHandler (InvalidArgs ia) = selectRep $ provideRep $ do
             liftIO $ threadDelay 10000000
@@ -150,7 +155,9 @@ YrarbilBackend 实现 Yesod 类型类。
               , "args" .= ia
               ]
 \end{code}
+\begin{description}
 \item[BadMethod] HTTP 请求方式错误。
+\end{description}
 \begin{code}
           errorHandler (BadMethod _) = selectRep $ provideRep $ do
             liftIO $ threadDelay 10000000
@@ -160,7 +167,9 @@ YrarbilBackend 实现 Yesod 类型类。
               , "reason" .= ("BadMethod" ::Text)
               ]
 \end{code}
+\begin{description}
 \item[InternalError] 交互错误。
+\end{description}
 \begin{code}
           errorHandler (InternalError t) = selectRep $ provideRep $ do
             liftIO $ threadDelay 10000000
@@ -171,7 +180,6 @@ YrarbilBackend 实现 Yesod 类型类。
               , "msg" .= t
               ]
 \end{code}
-\end{description}
 访问权限设置。
 \begin{code}
           isAuthorized HomeR  _ = return Authorized
@@ -235,7 +243,9 @@ post、get 获得 tidk 的函数。
 \end{code}
 
 \subsection{主函数}
-主函数。,访问 \href{http://localhost:3000/}{端口为3000的本地地址}，可看到。。。
+主函数。,访问 \href{http://localhost:3000/}{端口为3000的本地地址}
+\footnote{端口号，需要通过启动器输入，不一定会是 $3000$。使用Docker 版本的启动器，端口应该在设置 环境变量中设置 $ YRARBIL_BACKEND_PORT$}
+，可看到。。。
 \begin{code}
         main :: IO()
         main = do
