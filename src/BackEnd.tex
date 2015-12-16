@@ -31,6 +31,10 @@
   提供了对程序设置的读取。
   \input{Main/Config.lhs}
 
+  \section{共用的配置文件 lib/Yrarbil/Backend/Config.lhs]{lib/../Config.lhs}
+  用于启动器和主程序的配置的类型文件。
+  \input{../lib/Yrarbil/Backend/Config.lhs}
+
   \section[子站-提供版本信息 Info.lhs文件]{Info.lhs}
   提供了子站-提供版本的信息。
   \input{Info.lhs}
@@ -46,13 +50,10 @@
 
   \section{Launcher:用于道客云}
   用于在道客云等 Docker 容器中启动。
-  \input{../launch/DaocloudMain.lhs}
+  \input{../launch.docker/Main.lhs}
   \section{Launcher:通用启动器}
   用于通用环境的启动。
-  \input{../launch/NormalMain.lhs}
-  \section{Launcher:无启动器}
-  空的启动器，启动时不会做任何事。
-  \input{../launch/EmptyMain.lhs}
+  \input{../launch/Main.lhs}
 
 
 

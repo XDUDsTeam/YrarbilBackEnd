@@ -24,6 +24,7 @@ script:
   - cd ..
   - cabal configure
   - cabal build
+  - cabal install
   - cabal sdist
 
 after_success: |
@@ -48,6 +49,8 @@ after_success: |
     cd "$TRAVIS_BUILD_DIR"/dist
     cp *.tar.gz $RELPATH
     cd $RELPATH
+    echo $(date) >>ChangeLog.md
+    echo "Travis-CI build YrarbilBackend's new push."
     git add .
     git commit -am"$(date)"
     echo "commit done"
