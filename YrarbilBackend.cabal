@@ -89,6 +89,10 @@ executable yb.launch
     build-depends:     bytestring >= 0.10 && < 0.13
   else
     build-depends:     bytestring
+  if flag(version-limit)
+    build-depends:     cmdargs >= 0.10&&<0.11
+  else
+    build-depends:     cmdargs
   ghc-options: -Wall -O2
 
 executable yb.docker.launch
@@ -114,6 +118,10 @@ executable yb.docker.launch
     build-depends:     bytestring >= 0.10 && < 0.13
   else
     build-depends:     bytestring
+  if flag(version-limit)
+    build-depends:     cmdargs >= 0.10&&<0.11
+  else
+    build-depends:     cmdargs
   ghc-options: -Wall -O2
 
 
@@ -228,6 +236,11 @@ executable yb.bin
     build-depends:     SHA >= 1.5 && < 2.2
   else
     build-depends:     SHA
+
+  if flag(version-limit)
+    build-depends:     cmdargs >= 0.10&&<0.11
+  else
+    build-depends:     cmdargs
 
   -- Directories containing source files.
   hs-source-dirs:      src

@@ -27,6 +27,7 @@ install:
   - cabal install time
   - cabal install pureMD5
   - cabal install SHA
+  - cabal install cmdargs
 before_script:
   - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
   - echo $PATH
