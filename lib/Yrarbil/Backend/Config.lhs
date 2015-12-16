@@ -46,16 +46,16 @@ module Yrarbil.Backend.Config
 \subsection{全局设置}
 \begin{code}
         data Config = Config
-          { sqlConfig :: SqlConn
-          , exePort :: Int
+          { exePort :: Int
+          , sqlConfig :: SqlConn
           }
 \end{code}
 实现 FromJSON 类型类，与 ToJSON 类型类。
 \begin{code}
         instance FromJSON Config where
           parseJSON (Object v) = Config
-            <$> v .: "sqlconn"
-            <*> v .: "port"
+            <$> v .: "port"
+            <*> v .: "sqlconn"
         instance ToJSON Config where
           toJSON Config{..} = object
             [ "sqlconn" .= sqlConfig
