@@ -49,8 +49,8 @@ IO
 \begin{code}
          main :: IO()
          main = do
-         (hIn,_,_,_) <- createProcess $ shell "yb.bin"
-         getConfig >>= (hPutStrLn hIn . read . show . encode)
+           (hIn,_,_,_) <- createProcess $ shell "yb.bin"
+           getConfig >>= (hPutStrLn hIn . read . show . encode)
 \end{code}
 \subsection{写入函数}
 将特定环境变量等写入后端主函数的标准输入流。
