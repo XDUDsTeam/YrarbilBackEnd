@@ -4,7 +4,10 @@
 
 
 % start/NormalMain.lhs
-% 正常的开启后端的程序。
+% 常规的开启后端的程序。
+
+% 导入导言区
+\input{preamble}
 
 \subsection{模块}
 \begin{code}

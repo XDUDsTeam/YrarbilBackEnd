@@ -7,7 +7,7 @@
 % Docker 容器 启动的配置，目前是 道客云版本。
 
 % 导入导言区
-\input{preamble}
+\input{../src/preamble}
 
 \subsection{特性}
 \begin{code}
