@@ -12,6 +12,8 @@
 \subsection{特性}
 \begin{code}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE OverloadedStrings #-}
 \end{code}
 \subsection{程序主模块}
 \begin{code}
@@ -45,25 +47,35 @@ IO
 \begin{code}
          import Data.ByteString.Internal
 \end{code}
+处理 命令行参数。
+\begin{code}
+         import Args
+\end{code}
+处理 Maybe
+\begin{code}
+         import Data.Maybe
+\end{code}
 \subsection{主函数}
 \begin{code}
-         main :: IO()
-         main = do
+         main :: IO ()
+         main = runArgs toConfig >>= main'
+         main' :: Config-> IO()
+         main' c = do
            (hIn,_,_,_) <- createProcess $ shell "yb.bin"
-           getConfig >>= (hPutStrLn hIn . read . show . encode)
+           hPutStrLn (fromMaybe stdout hIn) $ read $ show $ encode c
 \end{code}
 \subsection{写入函数}
 将特定环境变量等写入后端主函数的标准输入流。
 \begin{code}
-         getConfig :: IO Config
-         getConfig = do
-           ybPort <- getEnv "YRARBIL_BACKEND_PORT"
-           ybCLmt <- getEnv "YRARBIL_BACKEND_CONNECTIONLIMIT"
-           pgAddr <- getEnv "POSTGRESQL_PORT_5432_TCP_ADDR"
-           pgPort <- getEnv "POSTGRESQL_PORT_5432_TCP_PORT"
-           pgDBN  <- getEnv "POSTGRESQL_INSTANCE_NAME"
-           pgPass <- getEnv "POSTGRESQL_PASSWORD"
-           pgUser <- getEnv "POSTGRESQL_USERNAME"
-           return $ Config ybPort $
-             SqlConn pgAddr pgPort pgUser pgPass pgDBN ybCLmt
+         toConfig :: Launch -> IO Config
+         toConfig Launch{..} = do
+           ybPort <- getEnv yrarbil_backend_port
+           ybCLmt <- getEnv yrarbil_backend_conlmt
+           pgAddr <- getEnv postgresql_addr
+           pgPort <- getEnv postgresql_port
+           pgDBN  <- getEnv postgresql_db
+           pgPass <- getEnv postgresql_pw
+           pgUser <- getEnv postgresql_usr
+           return $ Config (read ybPort) $
+             SqlConn pgAddr pgPort pgUser pgPass pgDBN (read ybCLmt)
 \end{code}

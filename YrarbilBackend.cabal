@@ -59,11 +59,15 @@ flag version-limit
 -- 使用Docker或道客云的启动器
 flag docker-launch
   description: 针对于 运行于 Docker 容器内，且运行于道客云的启动器。，具有第一优先级。
-  default: True
+  default: False
 
 flag normal-launch
   description: 使用通用 launch 启动
   default: True
+  
+flag no-main-bin
+  description: 不编译后端主程序。
+  default: False
 
 
 executable yb.launch
@@ -127,6 +131,11 @@ executable yb.docker.launch
 
 executable yb.bin
   main-is:             Main.lhs
+  
+  if flag(no-main-bin)
+    buildable:              False
+  else
+    buildable:              True
 
   -- Modules included in this executable, other than Main.
   other-modules:       AddDel
