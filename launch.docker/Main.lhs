@@ -43,7 +43,7 @@ IO
 \end{code}
 处理 ByteStrings
 \begin{code}
-		 import Data.ByteString.Internal
+         import Data.ByteString.Internal
 \end{code}
 \subsection{主函数}
 \begin{code}
