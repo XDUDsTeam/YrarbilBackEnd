@@ -36,3 +36,6 @@ sqlconfig.json
 
 #vscode
 .vscode
+
+# on MS-Windows
+*.exe
