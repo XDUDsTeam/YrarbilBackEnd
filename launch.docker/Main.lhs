@@ -39,11 +39,11 @@ IO
 \end{code}
 处理JSON
 \begin{code}
-         imoprt Data.Aeson
+         import Data.Aeson
 \end{code}
 处理 ByteStrings
 \begin{code}
-		 imoprt Data.ByteString.Internal
+		 import Data.ByteString.Internal
 \end{code}
 \subsection{主函数}
 \begin{code}
