@@ -25,11 +25,8 @@ script:
   - cd ..
   - cabal configure
   - cabal build
-  - cabal install
   - cabal sdist
-  - cd dist
-  - cabal sandbox init
-  - cabal install YrarbilBackend-*.tar.gz
+  - cabal install dist/YrarbilBackend-*.tar.gz
 
 after_success: |
   if [ -n "$GITHUB_API_KEY" ]; then
