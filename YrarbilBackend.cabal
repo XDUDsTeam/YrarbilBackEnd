@@ -10,7 +10,7 @@ name:                YrarbilBackend
 -- PVP summary:      +-+------- breaking API changes
 --                   | | +----- non-breaking API additions
 --                   | | | +--- code changes with no API change
-version:             0.0.4.40
+version:             0.0.6.12
 
 -- A short (one-line) description of the package.
 synopsis:            The back-end of yrarbil.
@@ -64,7 +64,7 @@ flag docker-launch
 flag normal-launch
   description: 使用通用 launch 启动
   default: True
-  
+
 flag no-main-bin
   description: 不编译后端主程序。
   default: False
@@ -132,7 +132,7 @@ executable yb.docker.launch
 
 executable yb.bin
   main-is:             Main.lhs
-  
+
   if flag(no-main-bin)
     buildable:              False
   else
@@ -251,6 +251,11 @@ executable yb.bin
     build-depends:     cmdargs >= 0.10&&<0.11
   else
     build-depends:     cmdargs
+
+  if flag(version-limit)
+    build-depends:     random >= 1 && < 1.5
+  else
+    build-depends:     random
 
   -- Directories containing source files.
   hs-source-dirs:      src

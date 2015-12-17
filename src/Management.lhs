@@ -17,6 +17,7 @@
 {-# LANGUAGE TypeFamilies               #-}
 {-# LANGUAGE GADTs                      #-}
 {-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE ViewPatterns               #-}
@@ -67,7 +68,6 @@ Persistent \& PostgreSQL
 处理时间。
 \begin{code}
         import Data.Time
-        import Data.Time.Clock
 \end{code}
 对数字字符的处理。
 \begin{code}
@@ -182,7 +182,6 @@ Persistent \& PostgreSQL
                 , "reason" .= ("No reader's id or book's id(barcode)." ::String)
                 ]
           where
-            lam (Entity _ x) = x
 \end{code}
 借阅图书。
 \begin{code}
@@ -246,6 +245,7 @@ Persistent \& PostgreSQL
 \end{code}
 查看是否有超期。
 \begin{code}
+        isOD :: Entity Bookopt -> Day -> Bool
         isOD (Entity _ (Bookopt _ _ _ _ (Just rd) _)) day = diffDays rd day < 0
         isOD _ _ = False
         isHasOverDate :: Yesod master
@@ -289,6 +289,10 @@ Persistent \& PostgreSQL
           bId <- lookupPostParam "bid"
           case bId of
             (Just bid') -> let bid = read $ show bid' in isBookOs bid $ isBookOverData bid $ returnBook bid
+            _ -> returnTJson $ object
+              [ "status" .= ("failed" ::String)
+              , "reason" .= ("where is the book??" ::String)
+              ]
 
           where
             returnBook :: Yesod master
@@ -312,9 +316,9 @@ Persistent \& PostgreSQL
           bId <- lookupPostParam "bid"
           case bId of
             Just bid -> do
-              rId <- findReaderId
+              rId <- findReaderId $ read $ show bid
               case rId of
-                Just rid -> isHasOverDate rid $ renew bid
+                Just (Just rid) -> isHasOverDate rid $ renew $ read $ show bid
                 _ -> returnTJson $ object
                   [ "status" .= ( "fail" :: String)
                   , "reason" .= ( "On shelf or is no your" ::String)
@@ -324,19 +328,26 @@ Persistent \& PostgreSQL
               , "reason" .= ("No book id"::String)
               ]
           where
+            lam (Entity _ x) = x
             findReaderId bid = do
-              r <- liftHandlerT $ runDB $ seleceList [BookitemBarcode ==. bid] []
-              case r of
-                (Bookitem _ _ False _ rid _ _):_ -> return $ Just rid
+              r <- liftHandlerT $ runDB $ selectList [BookitemBarcode ==. bid] []
+              case lam $ head r of
+                Bookitem _ _ False _ rid _ _ -> return $ Just rid
                 _ -> return Nothing
             renew bid = do
-              item <- liftHandlerT $ runDB $ selectList [BookoptBbc ==. bid]
-              key <- liftHandlerT $ runDB $ selectKeyList [BookoptBbc ==. bid,BookoptIsrt ==. False]
-              let (Bookopt _ _ _ t d _) = head item
-              liftHandlerT $ runDB $ update (head key) [BookoptTimes =. (t+1),BookoptRtdate =. (d+30)]
-              returnTJson $ object
-                [ "status" .= ("success" ::String)
-                ]
+              item <- liftHandlerT $ runDB $ selectList [BookoptBbc ==. bid] []
+              key <- liftHandlerT $ runDB $ selectKeysList [BookoptBbc ==. bid,BookoptIsrt ==. False] []
+              let (Bookopt _ _ _ t d' _) = lam $ head $ item
+              case d' of
+                Just d -> do
+                  liftHandlerT $ runDB $ update (head key) [BookoptTimes =. (t+1),BookoptRtdate =. Just (addDays 30 d)]
+                  returnTJson $ object
+                    [ "status" .= ("success" ::String)
+                    ]
+                _ -> returnTJson $ object
+                  [ "status" .= ("error" ::String)
+                  , "reason" .= ("inline=>return-date=>Nothing" ::String)
+                  ]
 \end{code}
 
 

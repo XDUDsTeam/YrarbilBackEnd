@@ -61,8 +61,9 @@ IO
          main = runArgs toConfig >>= main'
          main' :: Config-> IO()
          main' c = do
-           (hIn,_,_,_) <- createProcess $ shell "yb.bin"
-           hPutStrLn (fromMaybe stdout hIn) $ read $ show $ encode c
+           (hIn,_,_,_) <- createProcess (shell "yb.bin") {std_in=CreatePipe}
+           hPutStrLn (fromMaybe stdout hIn) $ (read $ show $ encode c)
+           hClose (fromMaybe stdout hIn)
 \end{code}
 \subsection{写入函数}
 将特定环境变量等写入后端主函数的标准输入流。
