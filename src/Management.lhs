@@ -332,7 +332,7 @@ Persistent \& PostgreSQL
             renew bid = do
               item <- liftHandlerT $ runDB $ selectList [BookoptBbc ==. bid]
               key <- liftHandlerT $ runDB $ selectKeyList [BookoptBbc ==. bid,BookoptIsrt ==. False]
-              let (Bookpot _ _ _ t d _) = head item
+              let (Bookopt _ _ _ t d _) = head item
               liftHandlerT $ runDB $ update (head key) [BookoptTimes =. (t+1),BookoptRtdate =. (d+30)]
               returnTJson $ object
                 [ "status" .= ("success" ::String)
