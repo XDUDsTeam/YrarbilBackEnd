@@ -16,7 +16,7 @@
 
 \subsection{模块 Args}
 \begin{code}
-module Args 
+module Args
       ( Launch(..)
       , runArgs
       ) where
@@ -43,11 +43,11 @@ module Args
           , postgresql_usr :: String
           } deriving (Show, Typeable, Data)
         launch = Launch
-          { yrarbil_backend_port = "YRARBIL_BACKEND_PORT" 
+          { yrarbil_backend_port = "YRARBIL_BACKEND_PORT"
               &= help "The environment value of backend's port."
               &= name "port"
               &= explicit
-              &= groupname "Backend settings"
+              &= groupname "Backend Settings"
           , yrarbil_backend_conlmt = "YRARBIL_BACKEND_CONNECTIONLIMIT"
               &= help "The environment value of the count of connection between backend and datebase."
               &= name "conlmt"
@@ -57,7 +57,7 @@ module Args
               &= help "The environment value of datebase's address."
               &= name "dbaddr"
               &= explicit
-              &= groupname "Datebase Connection Settings"
+              &= groupname "Database Connection Settings"
           , postgresql_db = "POSTGRESQL_INSTANCE_NAME"
               &= help "The environment value of the datebase's name."
               &= name "dbname"
@@ -78,11 +78,11 @@ module Args
               &= name "dbusr"
               &= explicit
               &= groupname "Database Connection Settings"
-          } 
-          &= details 
+          }
+          &= details
             [ "The is a launcher of yrarbil's backend, which will be used in daocloud's docker-ship."
             ]
-          &= summary "yb.docker.launch v0.0.4, (C) Qinka 2015"
+          &= summary "yb.docker.launch v0.0.6, (C) Qinka 2015"
           &= program "yb.docker.launch"
           &= verbosity
 \end{code}
