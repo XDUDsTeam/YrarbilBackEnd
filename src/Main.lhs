@@ -58,6 +58,10 @@ monad-logger。
 \begin{code}
         import    Management
 \end{code}
+导入子站 - 图书的销毁与录入。
+\begin{code}
+        import    AddDel
+\end{code}
 Data.Text
 \begin{code}
         import Data.Text.Lazy hiding (null)
@@ -75,6 +79,7 @@ YrabrilBackEnd 后端 主数据
           , getInformation :: Information
           , getAuther :: Text->Auther
           , getManagement :: Text -> Management
+          , getAddDel :: Text -> AddDel
           }
 \end{code}
 
@@ -83,7 +88,7 @@ YrabrilBackEnd 后端 主数据
         instance YesodPersist YrarbilBackEnd where
           type YesodPersistBackend YrarbilBackEnd = SqlBackend
           runDB a = do
-            YrarbilBackEnd p _ _ _ <- getYesod
+            YrarbilBackEnd p _ _ _ _ <- getYesod
             runSqlPool a p
 \end{code}
 
@@ -98,6 +103,7 @@ Yesod 路由表。
         /version SubsiteVR Information getInformation
         /1daa62b/#Text SubsiteAR Auther getAuther
         /a3cab3a/#Text SubsiteMR Management getManagement
+        /c7b70ceb/#Text SubadddelDR AddDel getAddDel
         |]
 \end{code}
 YrarbilBackend 实现 Yesod 类型类。
@@ -186,6 +192,7 @@ YrarbilBackend 实现 Yesod 类型类。
           isAuthorized (SubsiteVR _) _ = return Authorized
           isAuthorized (SubsiteAR _ (AdmininR _ _)) _ = return Authorized
           isAuthorized (SubsiteAR _ (ReaderinR _ _)) _ = return Authorized
+          isAuthorized (SubsiteMR _ _) _ = postAuthTidk
           isAuthorized (SubsiteAR _ _) _ = postAuthTidk
           isAuthorized _ _ = getAuthTidk
 \end{code}
@@ -254,6 +261,10 @@ post、get 获得 tidk 的函数。
             Just (st,lmt,p) -> do
               runStderrLoggingT $ withPostgresqlPool st lmt $
                 \pool ->liftIO $
-                warp p $ YrarbilBackEnd pool (Information pool) (\_->Auther pool) (\_ -> Management pool)
+                warp p $ YrarbilBackEnd pool
+                  (Information pool)
+                  (\_->Auther pool)
+                  (\_ -> Management pool)
+                  (\_ -> AddDel pool)
             Nothing -> error "error config"
 \end{code}

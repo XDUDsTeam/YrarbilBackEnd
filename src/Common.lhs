@@ -15,6 +15,7 @@ module Common
     ( returnTJson
     , t2t
     , t2it
+    , getRandom
     ) where
 \end{code}
 \subsection{导入}
@@ -35,6 +36,10 @@ Aeson 与 Yesod。
         import qualified Data.String as DS
         import Data.String
 \end{code}
+随机数。
+\begin{code}
+        import System.Random
+\end{code}
 返回 Text形式的的JSON 数据的函数。
 \begin{code}
         returnTJson :: Monad m =>  Value -> HandlerT site m Text
@@ -50,4 +55,9 @@ Data.Lazy.Text => Data.Text.Internal.Text
 \begin{code}
         t2it :: Text -> DTI.Text
         t2it = fromString.read.show.toStrict
+\end{code}
+获取随机数。
+\begin{code}
+        getRandom :: IO Int
+        getRandom = getStdRandom random >>= return . abs
 \end{code}
