@@ -121,3 +121,27 @@ Persist \& PostgreSQL。
             deriving Show Eq 
           |]
 \end{code}
+
+\subsection{添加图书}
+添加图书实体。
+\beign{code}
+        postPutinR :: Yesod master
+                   => Text
+                   -> HandlerT AddDel (HandlerT master IO) Text
+        postPutinR _ = undefined
+\end{code}
+添加图书信息，非实体。
+\begin{code}
+        postAddnewR :: Yesod master
+                    => Text
+                    -> HandlerT AddDel (HandlerT master IO) Text
+        postAddnewR _ = undefined
+\end{code}
+\subsection{删除图书}
+删除图书实体，图书信息无法删除。
+\begin{code}
+        postRemoveoutR :: Yesod master
+                       => Text
+                       -> HandlerT AddDel (HandlerT master IO) Text
+        postRemoveoutR _ = undefined
+\end{code}

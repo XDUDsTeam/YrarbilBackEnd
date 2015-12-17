@@ -40,6 +40,7 @@ module AddDel.Data where
         data AddDel = AddDel ConnectionPool
         mkYesodSubData "AddDel" [parseRoutes|
           /8769ab8/#Text PutinR POST
+          /4d632ab9/#Text AddnewR POST
           /761b31a3/#Text RemoveoutR POST
           |]
 \end{code}

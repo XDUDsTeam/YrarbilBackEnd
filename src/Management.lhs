@@ -122,7 +122,7 @@ Persistent \& PostgreSQL
             rbc Text sql=reader_barcode
             bbc Int sql=book_barcode
             times Int
-            rtdate Day Maybe sql=return_Date
+            rtdate Day Maybe sql=return_date
             isrt Bool sql=is_return
             Primary bsm
             deriving Eq Show
@@ -214,11 +214,11 @@ Persistent \& PostgreSQL
 \end{code}
 一次可以借阅 15 本。
 \begin{code}
-            checkBC :: Yesod master
+        checkBC :: Yesod master
                     => Text
                     -> HandlerT Management (HandlerT master IO) Text
                     -> HandlerT Management (HandlerT master IO) Text
-            checkBC rid a = do
+        checkBC rid a = do
               bs <- liftHandlerT $ runDB $ selectList
                 [BookitemLastid ==. (Just rid)] []
               if P.length bs >= 15
@@ -307,7 +307,36 @@ Persistent \& PostgreSQL
         postBookrenewR :: Yesod master
                        => Text
                        -> HandlerT Management (HandlerT master IO) Text
-        postBookrenewR = undefined
+        postBookrenewR _ = do
+          liftHandlerT $ addHeader "Content-Type" "application/json"
+          bId <- lookupPostParam "bid"
+          case bId of
+            Just bid -> do
+              rId <- findReaderId
+              case rId of
+                Just rid -> isHasOverDate rid $ renew bid
+                _ -> returnTJson $ object
+                  [ "status" .= ( "fail" :: String)
+                  , "reason" .= ( "On shelf or is no your" ::String)
+                  ]
+            _ -> returnTJson $ object
+              [ "status" .= ("failed" ::String)
+              , "reason" .= ("No book id"::String)
+              ]
+          where
+            findReaderId bid = do
+              r <- liftHandlerT $ runDB $ seleceList [BookitemBarcode ==. bid] []
+              case r of
+                (Bookitem _ _ False _ rid _ _):_ -> return $ Just rid
+                _ -> return Nothing
+            renew bid = do
+              item <- liftHandlerT $ runDB $ selectList [BookoptBbc ==. bid]
+              key <- liftHandlerT $ runDB $ selectKeyList [BookoptBbc ==. bid,BookoptIsrt ==. False]
+              let (Bookpot _ _ _ t d _) = head item
+              liftHandlerT $ runDB $ update (head key) [BookoptTimes =. (t+1),BookoptRtdate =. (d+30)]
+              returnTJson $ object
+                [ "status" .= ("success" ::String)
+                ]
 \end{code}
 
 
