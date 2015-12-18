@@ -65,6 +65,7 @@ monad-logger。
 Data.Text
 \begin{code}
         import Data.Text.Lazy hiding (null)
+        import Data.Text as DT (unpack)
 \end{code}
 设置延迟
 \begin{code}
@@ -204,7 +205,7 @@ post、get 获得 tidk 的函数。
           tidk' <- lookupPostParam "tidk"
           if tidk' == Nothing then return $ Unauthorized ":("
             else do
-              let tidk = (t2t.(\(Just x)->x)) tidk'
+              let tidk = (fromString.unpack.(\(Just x)->x)) tidk'
               rt' <- liftHandlerT $ runDB $ selectList [Auth.TidTid ==. tidk] []
               let rt = Prelude.map lam rt'
               if Prelude.null rt then return $ Unauthorized ":("
