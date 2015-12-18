@@ -49,7 +49,7 @@ Aeson 与 Yesod。
 Data.Text.Internal.Text => Data.Lazy.Text
 \begin{code}
         t2t :: DTI.Text -> Text
-        t2t = pack.showText
+        t2t = fromString.showText
 \end{code}
 Data.Lazy.Text => Data.Text.Internal.Text
 \begin{code}

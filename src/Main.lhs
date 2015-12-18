@@ -204,7 +204,7 @@ post、get 获得 tidk 的函数。
           tidk' <- lookupPostParam "tidk"
           if tidk' == Nothing then return $ Unauthorized ":("
             else do
-              let tidk = (pack.read.show.(\(Just x)->x)) tidk'
+              let tidk = (t2t.(\(Just x)->x)) tidk'
               rt' <- liftHandlerT $ runDB $ selectList [Auth.TidTid ==. tidk] []
               let rt = Prelude.map lam rt'
               if Prelude.null rt then return $ Unauthorized ":("
