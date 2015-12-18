@@ -136,8 +136,8 @@ Persist \& PostgreSQL。
           bc' <- lookupPostParam "barcode"
           case (isbn',bc') of
             (Just isbn'',Just bc'') ->
-              let isbn = read $ unpack isbn''
-                  bc = read $ unpack bc''
+              let isbn = read $ showText isbn''
+                  bc = read $ showText bc''
               in checkISBN isbn $ checkBarcode bc $ addNew isbn bc
             _ -> returnTJson $ object
               [ "status" .= ("error" ::String)
@@ -197,8 +197,8 @@ Persist \& PostgreSQL。
           zth' <- lookupPostParam "zth"
           case (isbn',title',auth',publocal',pubh',pubd',zth') of
             (Just isbn'',title,auth,publ,pubh,pubd'',zth) ->
-              let isbn = read $ unpack isbn''
-                  pubd = fmap (read.unpack) pubd'' :: Maybe Day
+              let isbn = read $ showText isbn''
+                  pubd = fmap (read.showText) pubd'' :: Maybe Day
               in checkISBN isbn $ addNew
                 isbn
                 (fmap t2t title)
@@ -252,8 +252,8 @@ Persist \& PostgreSQL。
           liftHandlerT $ addHeader "Content-Type" "application/json"
           isbn' <- liftHandlerT $ lookupPostParam "isbn"
           barcode' <- liftHandlerT $ lookupPostParam "barcode"
-          let barcode = fmap (read.unpack) barcode'
-          let isbn = fmap (read.unpack) isbn'
+          let barcode = fmap (read.showText) barcode'
+          let isbn = fmap (read.showText) isbn'
           bb <- b barcode
           ii <- i isbn
           gother [bb,ii]
