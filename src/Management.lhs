@@ -208,7 +208,7 @@ Persistent \& PostgreSQL
               liftHandlerT $ runDB $ updateWhere [BookitemBarcode ==. bid] [BookitemOnshelf =. False]
               returnTJson $ object
                 [ "status" .= ("success" ::String)
-                , "date" .= utctDay time
+                , "date" .= (addDays 30 $ utctDay time)
                 ]
 \end{code}
 一次可以借阅 15 本。
@@ -235,7 +235,7 @@ Persistent \& PostgreSQL
                  -> HandlerT Management (HandlerT master IO) Text
         isBookOs bc a = do
           ioshelf <- liftHandlerT $ runDB $ selectList
-            ([BookitemBarcode ==. bc] ||. [BookitemOnshelf ==. True] ||. [BookitemThere ==. True]) []
+            [BookitemBarcode ==. bc,BookitemOnshelf ==. True,BookitemThere ==. True] []
           if null ioshelf
             then returnTJson $ object
               [ "status" .= ("failed" ::String)
