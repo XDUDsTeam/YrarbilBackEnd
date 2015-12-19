@@ -105,7 +105,7 @@ Persistent \& PostgreSQL
             llindex Text Maybe sql=library_index
             Primary isbn
             deriving Eq Show
-          Bookitem json sql=table_bookinfo
+          Bookitem json sql=table_bookitem
             Id sql=
             barcode Int
             isbn Int
