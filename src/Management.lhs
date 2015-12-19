@@ -205,7 +205,7 @@ Persistent \& PostgreSQL
                   1
                   (Just $ addDays 30 $ utctDay time)
                   False
-              liftHandlerT $ runDB $ updateWhere [BookitemBarcode ==. bid] [BookitemOnshelf =. False]
+              liftHandlerT $ runDB $ updateWhere [BookitemBarcode ==. bid] [BookitemOnshelf =. False,BookitemLastid =. Just rid]
               returnTJson $ object
                 [ "status" .= ("success" ::String)
                 , "date" .= (addDays 30 $ utctDay time)
@@ -302,7 +302,7 @@ Persistent \& PostgreSQL
                        -> HandlerT Management (HandlerT master IO) Text
             returnBook bid = do
               liftHandlerT $ runDB $ updateWhere [BookoptBbc ==. bid,BookoptIsrt ==. False] [BookoptIsrt =. True]
-              liftHandlerT $ runDB $ updateWhere [BookitemBarcode ==.bid,BookitemThere ==. True] [BookitemOnshelf =. True]
+              liftHandlerT $ runDB $ updateWhere [BookitemBarcode ==.bid,BookitemThere ==. True] [BookitemOnshelf =. True,BookitemLastid =. Nothing]
               returnTJson $ object
                 [ "status" .= ("success" :: String)]
 
@@ -333,7 +333,7 @@ Persistent \& PostgreSQL
           where
             lam (Entity _ x) = x
             findReaderId bid = do
-              r <- liftHandlerT $ runDB $ selectList [BookitemBarcode ==. bid] []
+              r <- liftHandlerT $ runDB $ selectList [BookitemBarcode ==. bid,BookitemOnshelf ==. False,BookitemThere ==. True] []
               case lam $ head r of
                 Bookitem _ _ False _ rid _ _ -> return $ Just rid
                 _ -> return Nothing
