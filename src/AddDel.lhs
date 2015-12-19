@@ -224,10 +224,6 @@ Persist \& PostgreSQL。
                    -> HandlerT AddDel (HandlerT master IO) Text
             addNew isbn title auth publ pubh pubd zth = do
               liftHandlerT $ runDB $ insert $ Bookinfo isbn title auth publ pubh pubd Nothing zth
-              ssm <- liftIO $ getRandom
-              time <- liftIO $ getCurrentTime
-              liftHandlerT $ runDB $ insert $ Opt ssm (utctDay time) 1 "nothing"
-              liftHandlerT $ runDB $ insert $ Bookoptout (fromString ((show ssm) ++ "@" ++ (show $ utctDay time)))  "just remove it!" Nothing
               returnTJson $ object
                 [ "status" .= ("success" ::String)]
             checkISBN :: Yesod master
@@ -299,6 +295,10 @@ Persist \& PostgreSQL。
               if is
                 then do
                   liftHandlerT $ runDB $ deleteWhere [BookitemIsbn ==. isbn]
+                  ssm <- liftIO $ getRandom
+                  time <- liftIO $ getCurrentTime
+                  liftHandlerT $ runDB $ insert $ Opt ssm (utctDay time) 1 "nothing"
+                  liftHandlerT $ runDB $ insert $ Bookoptout (fromString ((show ssm) ++ "@" ++ (show $ utctDay time)))  "just remove it!" Nothing
                   return Nothing
                 else return $ Just "no such books"
             deleteBYbarcode :: Yesod master
@@ -309,6 +309,10 @@ Persist \& PostgreSQL。
               if is
                 then do
                   liftHandlerT $ runDB $ deleteWhere [BookitemBarcode ==. bc]
+                  ssm <- liftIO $ getRandom
+                  time <- liftIO $ getCurrentTime
+                  liftHandlerT $ runDB $ insert $ Opt ssm (utctDay time) 1 "nothing"
+                  liftHandlerT $ runDB $ insert $ Bookoptout (fromString ((show ssm) ++ "@" ++ (show $ utctDay time)))  "just remove it!" Nothing
                   return Nothing
                 else return $ Just "no such book"
 \end{code}
