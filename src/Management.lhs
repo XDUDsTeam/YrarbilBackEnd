@@ -170,9 +170,10 @@ Persistent \& PostgreSQL
           rId <- lookupPostParam "rid"
           bId <- lookupPostParam "bid"
           case (rId,bId) of
-            (Just rid,Just bid) -> isBookOs (read $ show bid) $
+            (Just rid,Just bid') -> let bid = read $ read $ show bid' in
+                                   isBookOs bid $
                                    checkBC (t2t rid) $
-                                   lendBook (t2t rid) (read $ show bid)
+                                   lendBook (t2t rid) bid
 \end{code}
 如果参数不齐，则返回错误。
 \begin{code}
@@ -194,13 +195,13 @@ Persistent \& PostgreSQL
               tidk' <- lookupPostParam "tidk"
               let (Just tidk) = tidk'
               (Entity _ (Tid _ _ uid):_) <- liftHandlerT $ runDB $ selectList [TidTid ==. t2t tidk] []
-              let sn = read $ show [ a | a <- (show time++show tidk) , isDigit a]
+              sn <- liftIO $ getRandom
               liftHandlerT $ runDB $ insert $ Opt sn (utctDay time) 0 uid
               liftHandlerT $ runDB $ insert $
                 Bookopt
-                  (pack (show sn ++ show time))
+                  (pack (show sn ++ "@" ++ show time))
                   rid
-                  (read $  show bid)
+                  bid
                   1
                   (Just $ addDays 30 $ utctDay time)
                   False
@@ -288,7 +289,8 @@ Persistent \& PostgreSQL
           liftHandlerT $ addHeader "Content-Type" "application/json"
           bId <- lookupPostParam "bid"
           case bId of
-            (Just bid') -> let bid = read $ show bid' in isBookOs bid $ isBookOverData bid $ returnBook bid
+            (Just bid') -> let bid = read $ read $ show bid' in
+                      isBookOs bid $ isBookOverData bid $ returnBook bid
             _ -> returnTJson $ object
               [ "status" .= ("failed" ::String)
               , "reason" .= ("where is the book??" ::String)
@@ -315,10 +317,11 @@ Persistent \& PostgreSQL
           liftHandlerT $ addHeader "Content-Type" "application/json"
           bId <- lookupPostParam "bid"
           case bId of
-            Just bid -> do
-              rId <- findReaderId $ read $ show bid
+            Just bid' -> do
+              let bid = read $ read $ show bid'
+              rId <- findReaderId bid 
               case rId of
-                Just (Just rid) -> isHasOverDate rid $ renew $ read $ show bid
+                Just (Just rid) -> isHasOverDate rid $ renew bid
                 _ -> returnTJson $ object
                   [ "status" .= ( "fail" :: String)
                   , "reason" .= ( "On shelf or is no your" ::String)
