@@ -32,7 +32,7 @@ after_success: |
   if [ -n "$GITHUB_API_KEY" ]; then
     git config --global user.name "travis_auto"
     git config --global user.email "qinka@live.com"
-    echo '\n#config done\n'
+    echo '\nconfig done\n'
     cd ~
     git clone https://qinka:$GITHUB_API_KEY@github.com/XDUDsTeam/YrarbilRelease.git
     echo "clone done"
@@ -50,7 +50,7 @@ after_success: |
     cd "$TRAVIS_BUILD_DIR"/dist
     cp *.tar.gz $RELPATH
     cd $RELPATH
-    echo $(date) >>ChangeLog.md
+    echo "\n#$(date)\n" >>ChangeLog.md
     echo "Travis-CI build YrarbilBackend's new push."
     git add .
     git commit -am"$(date)"
