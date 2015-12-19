@@ -205,8 +205,7 @@ Persistent \& PostgreSQL
                   1
                   (Just $ addDays 30 $ utctDay time)
                   False
-              let (Right ke) = keyFromValues [PersistInt64 $ read $ show bid]
-              liftHandlerT $ runDB $ update ke [BookitemOnshelf =. False]
+              liftHandlerT $ runDB $ updateWhere [BookitemBarcode ==. bid] [BookitemOnshelf =. False]
               returnTJson $ object
                 [ "status" .= ("success" ::String)
                 , "date" .= utctDay time
@@ -301,8 +300,7 @@ Persistent \& PostgreSQL
                        => Int
                        -> HandlerT Management (HandlerT master IO) Text
             returnBook bid = do
-              key <- liftHandlerT $ runDB $ selectKeysList [BookoptBbc ==. bid,BookoptIsrt ==. False] []
-              liftHandlerT $ runDB $ update (head key) [BookoptIsrt =. True]
+              liftHandlerT $ runDB $ updateWhere [BookoptBbc ==. bid,BookoptIsrt ==. False] [BookoptIsrt =. True]
               returnTJson $ object
                 [ "status" .= ("success" :: String)]
 
@@ -319,7 +317,7 @@ Persistent \& PostgreSQL
           case bId of
             Just bid' -> do
               let bid = read $ read $ show bid'
-              rId <- findReaderId bid 
+              rId <- findReaderId bid
               case rId of
                 Just (Just rid) -> isHasOverDate rid $ renew bid
                 _ -> returnTJson $ object

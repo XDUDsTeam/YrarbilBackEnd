@@ -10,7 +10,7 @@ name:                YrarbilBackend
 -- PVP summary:      +-+------- breaking API changes
 --                   | | +----- non-breaking API additions
 --                   | | | +--- code changes with no API change
-version:             0.0.6.55
+version:             0.0.6.57
 
 -- A short (one-line) description of the package.
 synopsis:            The back-end of yrarbil.
