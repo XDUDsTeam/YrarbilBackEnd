@@ -46,6 +46,7 @@ module AddDel
         import Prelude hiding ()
         import Data.Text.Lazy hiding (null)
         import Data.String
+        import Data.Text.Internal(showText)
 \end{code}
 Persist \& PostgreSQL。
 \begin{code}
