@@ -59,5 +59,5 @@ Data.Lazy.Text => Data.Text.Internal.Text
 获取随机数。
 \begin{code}
         getRandom :: IO Int
-        getRandom = getStdRandom random >>= return . abs
+        getRandom = getStdRandom random >>= return . (`quot` 10000000000)
 \end{code}
