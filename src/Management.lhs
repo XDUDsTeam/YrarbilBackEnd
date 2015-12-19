@@ -302,6 +302,7 @@ Persistent \& PostgreSQL
                        -> HandlerT Management (HandlerT master IO) Text
             returnBook bid = do
               liftHandlerT $ runDB $ updateWhere [BookoptBbc ==. bid,BookoptIsrt ==. False] [BookoptIsrt =. True]
+              liftHandlerT $ runDB $ updateWhere [BookitemBarcode ==.bid,BookitemThere ==. True] [BookitemOnshelf =. True]
               returnTJson $ object
                 [ "status" .= ("success" :: String)]
 
