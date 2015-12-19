@@ -137,7 +137,7 @@ Persist \& PostgreSQL。
           bc' <- lookupPostParam "barcode"
           case (isbn',bc') of
             (Just isbn'',Just bc'') ->
-              let isbn = read $ showText isbn''
+              let isbn = read $ show isbn''
                   bc = read $ showText bc''
               in checkISBN isbn $ checkBarcode bc $ addNew isbn bc
             _ -> returnTJson $ object
@@ -253,8 +253,8 @@ Persist \& PostgreSQL。
           liftHandlerT $ addHeader "Content-Type" "application/json"
           isbn' <- liftHandlerT $ lookupPostParam "isbn"
           barcode' <- liftHandlerT $ lookupPostParam "barcode"
-          let barcode = fmap (read.showText) barcode'
-          let isbn = fmap (read.showText) isbn'
+          let barcode = fmap (read.read.show) barcode'
+          let isbn = fmap (read.read.show) isbn'
           bb <- b barcode
           ii <- i isbn
           gother [bb,ii]

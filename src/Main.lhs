@@ -208,10 +208,9 @@ post、get 获得 tidk 的函数。
             else do
               let tidk = (fromString.DT.unpack.(\(Just x)->x)) tidk'
               rt' <- liftHandlerT $ runDB $ selectList [Auth.TidTid ==. tidk] []
-              let rt = Prelude.map lam rt'
-              if Prelude.null rt then return $ Unauthorized ":("
+              if Prelude.null rt' then return $ Unauthorized ":("
                 else do
-                  let (Auth.Tid _ time _) = Prelude.head rt
+                  let (Auth.Tid _ time _) = lam $ Prelude.head rt'
                   tnow <- liftIO $ getCurrentTime
                   if diffUTCTime time tnow <0 then return $ Unauthorized ":("
                     else return Authorized
@@ -221,12 +220,11 @@ post、get 获得 tidk 的函数。
           tidk' <- lookupGetParam "tidk"
           if tidk' == Nothing then return $ Unauthorized ":("
             else do
-              let tidk = (pack.read.show.(\(Just x)->x)) tidk'
+              let tidk = (fromString.DT.unpack.(\(Just x)->x)) tidk'
               rt' <- liftHandlerT $ runDB $ selectList [Auth.TidTid ==. tidk] []
-              let rt = Prelude.map lam rt'
-              if Prelude.null rt then return $ Unauthorized ":("
+              if Prelude.null rt' then return $ Unauthorized ":("
                 else do
-                  let (Auth.Tid _ time _) = Prelude.head rt
+                  let (Auth.Tid _ time _) = lam $ Prelude.head rt'
                   tnow <- liftIO $ getCurrentTime
                   if diffUTCTime time tnow <0 then return $ Unauthorized ":("
                     else return Authorized
