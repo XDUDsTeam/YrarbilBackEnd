@@ -259,11 +259,11 @@ Persistent \& PostgreSQL
           let day = utctDay time
           let rt = [ r | r <-rt' , isOD r day ]
           if P.null rt
-            then returnTJson $ object
+            then a
+            else returnTJson $ object
               [ "status" .= ("failed" ::String)
               , "reason" .= ("not return the book overdate" ::String)
               ]
-            else a
         isBookOverData :: Yesod master
                        => Int
                        -> HandlerT Management (HandlerT master IO) Text
