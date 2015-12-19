@@ -137,8 +137,8 @@ Persist \& PostgreSQL。
           bc' <- lookupPostParam "barcode"
           case (isbn',bc') of
             (Just isbn'',Just bc'') ->
-              let isbn = read $ show isbn''
-                  bc = read $ showText bc''
+              let isbn = read $ read $ show isbn''
+                  bc = read $ read $ show bc''
               in checkISBN isbn $ checkBarcode bc $ addNew isbn bc
             _ -> returnTJson $ object
               [ "status" .= ("error" ::String)
@@ -198,8 +198,8 @@ Persist \& PostgreSQL。
           zth' <- lookupPostParam "zth"
           case (isbn',title',auth',publocal',pubh',pubd',zth') of
             (Just isbn'',title,auth,publ,pubh,pubd'',zth) ->
-              let isbn = read $ showText isbn''
-                  pubd = fmap (read.showText) pubd'' :: Maybe Day
+              let isbn = read $ read $ show isbn''
+                  pubd = fmap (read.read.show) pubd'' :: Maybe Day
               in checkISBN isbn $ addNew
                 isbn
                 (fmap t2t title)
