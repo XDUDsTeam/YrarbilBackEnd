@@ -171,7 +171,7 @@ Persistent \& PostgreSQL
           bId <- lookupPostParam "bid"
           case (rId,bId) of
             (Just rid,Just bid') -> let bid = read $ read $ show bid' in
-                                   isBookOs bid $
+                                   isBookOs bid True $
                                    checkBC (t2t rid) $
                                    lendBook (t2t rid) bid
 \end{code}
@@ -231,12 +231,13 @@ Persistent \& PostgreSQL
 \begin{code}
         isBookOs :: Yesod master
                  => Int
+                 -> Bool -- True 不在架 False 在架
                  -> HandlerT Management (HandlerT master IO) Text
                  -> HandlerT Management (HandlerT master IO) Text
-        isBookOs bc a = do
+        isBookOs bc b a = do
           ioshelf <- liftHandlerT $ runDB $ selectList
             [BookitemBarcode ==. bc,BookitemOnshelf ==. True,BookitemThere ==. True] []
-          if null ioshelf
+          if null ioshelf == b
             then returnTJson $ object
               [ "status" .= ("failed" ::String)
               , "reason" .= ("The book is not on the shelf or there." ::String)
@@ -289,7 +290,7 @@ Persistent \& PostgreSQL
           bId <- lookupPostParam "bid"
           case bId of
             (Just bid') -> let bid = read $ read $ show bid' in
-                      isBookOs bid $ isBookOverData bid $ returnBook bid
+                      isBookOs bid False $ isBookOverData bid $ returnBook bid
             _ -> returnTJson $ object
               [ "status" .= ("failed" ::String)
               , "reason" .= ("where is the book??" ::String)
