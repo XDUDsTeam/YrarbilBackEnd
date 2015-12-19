@@ -274,11 +274,11 @@ Persistent \& PostgreSQL
           let day = utctDay time
           let rt = [ r | r<- rt', isOD r day]
           if P.null rt
-            then returnTJson $ object
+            then a
+            else returnTJson $ object
               [ "status" .= ("failed" ::String)
               , "reason" .= ("This book is overDATE." ::String)
               ]
-            else a
 \end{code}
 归还图书处理函数。
 \begin{code}
