@@ -23,7 +23,7 @@ script:
   - xelatex BackEnd.tex
   - xelatex BackEnd.tex
   - cd ..
-  - cabal configure
+  - cabal configure -fdocker-launch
   - cabal build
   - cabal sdist
   - cabal install dist/YrarbilBackend-*.tar.gz
