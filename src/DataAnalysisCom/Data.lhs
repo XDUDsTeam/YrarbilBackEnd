@@ -16,6 +16,7 @@
 {-# LANGUAGE TypeFamilies	     #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ViewPatterns	     #-}
+{-# LANGUAGE DataKinds         #-}
 \end{code}
 \subsection{模块 DataAnalysisCom.Data}
 \begin{code}
@@ -26,6 +27,10 @@ module DataAnalysisCom.Data where
         import Yesod
         import Database.Persist.Postgresql
 \end{code}
+处理 Text。
+\begin{code}
+        import Data.Text.Lazy
+\end{code}
 使用SafeS确定安全
 \begin{code}
         import SafeS
@@ -35,5 +40,12 @@ module DataAnalysisCom.Data where
 \begin{code}
         data AnaCom = AnaCom ConnectionPool
         mkYesodSubData "AnaCom" [parseRoutes|
+          /34b7da9d/#Text        BookinfolistR          POST
+          /8bd0aa8/#Text         BookitemlistR          POST
+          /5e2ba697/Text         ReaderlistR            POST
+          /989abddd5/#Text       BookoptinlistR         POST
+          /988adff/#Text         BookoptoutlistR        POST
+          /1123aa/#Text          BookoptmainlistR       POST
+          /90f7aa8/#Text         PunishlistR            POST
           |]
 \end{code}
