@@ -150,7 +150,7 @@ executable yb.bin
                      , ConstFinder.Data
                      , ConstFinder.Const
                      , ConstFinder.Const.TH
-                     -- , DataAnalysisCom
+                     , DataAnalysisCom
                      , DataAnalysisCom.Data
                      , Index
                      , Index.Data
