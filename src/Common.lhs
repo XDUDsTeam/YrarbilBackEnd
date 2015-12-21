@@ -16,6 +16,7 @@ module Common
     , t2t
     , t2it
     , getRandom
+    , lookupPostParamS
     ) where
 \end{code}
 \subsection{导入}
@@ -60,4 +61,17 @@ Data.Lazy.Text => Data.Text.Internal.Text
 \begin{code}
         getRandom :: IO Int
         getRandom = getStdRandom random >>= return . (`quot` 10000000000)
+\end{code}
+“批量”获取 Params
+\begin{code}
+        lookupPostParamS :: (MonadResource m, MonadHandler m,IsString s0,Show s0,IsString s1)
+                         => [s0]
+                         -> m [(s0,Maybe s1)]
+        lookupPostParamS [] = return []
+        lookupPostParamS (x:xs) = do
+          let x' = fromString $ read $ show x
+          rt <- lookupPostParam x'
+          let rt' = fmap (fromString.read.show) rt
+          rts <- lookupPostParamS xs
+          return $ (x,rt'):rts
 \end{code}

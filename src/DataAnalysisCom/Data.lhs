@@ -42,7 +42,7 @@ module DataAnalysisCom.Data where
         mkYesodSubData "AnaCom" [parseRoutes|
           /34b7da9d/#Text        BookinfolistR          POST
           /8bd0aa8/#Text         BookitemlistR          POST
-          /5e2ba697/Text         ReaderlistR            POST
+          /5e2ba697/#Text        ReaderlistR            POST
           /989abddd5/#Text       BookoptinlistR         POST
           /988adff/#Text         BookoptoutlistR        POST
           /1123aa/#Text          BookoptmainlistR       POST

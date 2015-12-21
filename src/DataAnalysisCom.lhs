@@ -50,7 +50,7 @@ module DataAnalysisCom
 处理 Text 与 ByteStrings。
 \begin{code}
         import Prelude hiding ()
-        import Data.Text.Lazy hiding (map,concat)
+        import Data.Text.Lazy hiding (map,concat,find)
         import Data.String
         import Data.Text.Internal(showText)
 \end{code}
@@ -173,6 +173,14 @@ Persistent \& PostgreSQL
 \end{code}
 
 \subsection{处理函数}
+特殊函数。
+\begin{code}
+        find :: Eq a1 => [(a1, Maybe a)] -> a1 -> Maybe a
+        find [] _ = Nothing
+        find ((x,mx):xs) e
+          | x == e = mx
+          | otherwise = find xs e
+\end{code}
 BookinfolistR，处理图书信息访问列表。
 \begin{code}
         postBookinfolistR :: Yesod master
@@ -180,38 +188,41 @@ BookinfolistR，处理图书信息访问列表。
                           -> HandlerT AnaCom (HandlerT master IO) Text
         postBookinfolistR _ = do
           liftHandlerT $ addHeader "Content-Type" "application/json"
-          isbn <- lookupPostParam "isbn"
-          title <- lookupPostParam "title"
-          auth <- lookupPostParam "author"
-          publ <- lookupPostParam "publishlocal"
-          pubh <- lookupPostParam "publishhouse"
-          pubd <- lookupPostParam "publishdate"
-          libl <- lookupPostParam "librarylocal"
-          libi <- lookupPostParam "zth"
+          parms <- lookupPostParamS
+            [ "isbn"
+            , "title"
+            , "author"
+            , "publishlocal"
+            , "publishhouse"
+            , "publishdate"
+            , "librarylocal"
+            , "zth"
+            ]
+          let finder = find parms
           let
            just = Just . t2t
-           isbn' = case isbn of
+           isbn' = case finder "isbn" of
             Just x -> [BookinfoIsbn ==. (read $ read $ show x)]
             Nothing -> []
-           title' = case title of
+           title' = case finder "title" of
             Just x -> [BookinfoName ==. just x]
             Nothing -> []
-           auth' = case auth of
+           auth' = case finder "author" of
             Just x -> [BookinfoAuthor ==. just x]
             Nothing -> []
-           publ' = case publ of
+           publ' = case finder "publishlocal" of
             Just x -> [BookinfoPlocal ==. just x]
             Nothing -> []
-           pubh' = case pubh of
+           pubh' = case finder "publishhouse" of
             Just x -> [BookinfoPhouse ==. just x]
             Nothing -> []
-           pubd' = case pubd of
+           pubd' = case finder "publishdate" of
             Just x -> [BookinfoPdate ==. Just (read $ read $ show x)]
             Nothing -> []
-           libl' = case libl of
+           libl' = case finder "librarylocal" of
             Just x -> [BookinfoLlocal ==. just x]
             Nothing -> []
-           libi' = case libi of
+           libi' = case finder "zth" of
             Just x -> [BookinfoLlindex ==. just x]
             Nothing -> []
            sql = concat
@@ -223,7 +234,8 @@ BookinfolistR，处理图书信息访问列表。
             , pubd'
             , libl'
             , libi'
-            ]in do
+            ]
+           in do
             rt' <- liftHandlerT $ runDB $ selectList sql []
             let rt = map lam rt'
             returnTJson $ object
@@ -238,14 +250,94 @@ BookitemlistR，处理图书实体访问。
         postBookitemlistR :: Yesod master
                           => Text
                           -> HandlerT AnaCom (HandlerT master IO) Text
-        postBookitemlistR _ = undefined
+        postBookitemlistR _ = do
+          liftHandlerT $ addHeader "Content-Type" "application/json"
+          params <- lookupPostParamS
+            [ "isbn"
+            , "onshelf"
+            , "there"
+            , "lastid"
+            ]
+          let
+            lam (Entity _ x) = x
+            finder = find params
+            just = Just . t2t
+            isbn = case finder "isbn" of
+              Just x -> [BookitemIsbn ==. read' x]
+              Nothing -> []
+            onshelf = case finder "onshelf" of
+              Just x -> [BookitemOnshelf ==. read' x]
+              Nothing -> []
+            there = case finder "there" of
+              Just x-> [BookitemThere ==. read' x]
+              Nothing -> []
+            lastid = case finder "lastid" of
+              Just x -> [BookitemLastid ==. just x]
+              Nothing -> []
+            sql = concat
+              [ isbn
+              , onshelf
+              , there
+              , lastid
+              ]
+            in do
+              rt <- liftHandlerT $ runDB $ selectList sql []
+              returnTJson $ object
+                [ "status" .= ("success" ::String)
+                , "result" .= map lam rt
+                ]
+          where
+            read' :: (Read b ,Show a) => a -> b
+            read' = read.read.show
 \end{code}
 ReaderlistR，处理读者信息访问。
 \begin{code}
         postReaderlistR :: Yesod master
                         => Text
                         -> HandlerT AnaCom (HandlerT master IO) Text
-        postReaderlistR _ = undefined
+        postReaderlistR _ = do
+          liftHandlerT $ addHeader "Content-Type" "application/json"
+          params <- lookupPostParamS
+            [ "barcode"
+            , "debt"
+            , "password"
+            , "idctp"
+            , "idcid"
+            ]
+          let
+            lam (Entity _ x) = x
+            finder = find params
+            barcode = case finder "barcode" of
+              Just x -> [ReaderBarcode ==. x]
+              Nothing -> []
+            debt = case finder "debt" of
+              Just x -> [ReaderDebt ==. read' x]
+              Nothing -> []
+            pw = case finder "password" of
+              Just x -> [ReaderEpw ==. x]
+              Nothing -> []
+            ict = case finder "idctp" of
+              Just x -> [ReaderIdctp ==. Just x]
+              Nothing -> []
+            ici = case finder "idcid" of
+              Just x -> [ReaderIdcid ==. Just x]
+              Nothing -> []
+            sql = concat
+              [ barcode
+              , debt
+              , pw
+              , ict
+              , ici
+              ]
+            in do
+              rt <- liftHandlerT $ runDB $ selectList sql []
+              returnTJson $ object
+                [ "status" .= ("success" ::String)
+                , "result" .= map lam rt
+                ]
+          where
+            read' :: (Read b ,Show a) => a -> b
+            read' = read.read.show
 \end{code}
 BookoptinlistR，处理录入操作信息访问。
 \begin{code}
