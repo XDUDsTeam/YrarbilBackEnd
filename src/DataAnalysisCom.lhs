@@ -238,42 +238,86 @@ BookitemlistR，处理图书实体访问。
         postBookitemlistR :: Yesod master
                           => Text
                           -> HandlerT AnaCom (HandlerT master IO) Text
-        postBookitemlistR _ = undefined
+        postBookitemlistR _ = do
+          liftHandlerT $ addHeader "Content-Type" "application/json"
+          isbn <- lookupPostParam "isbn"
+          bc <- lookupPostParam "barcode"
+          onshelf <- lookupPostParam "onshelf"
+          there <- lookupPostParam "there"
+          lastid <- lookupPostParam "lastid"
+          let
+            isbn' = case isbn of
+              Just x -> [BookitemIsbn ==. readIt x]
+              Nothing -> []
+            bc' = case bc of
+              Just x -> [BookitemBarcode ==. readIt x]
+              Nothing -> []
+            onshelf' = case onshelf of
+              Just x -> [BookitemOnshelf ==. readIt x]
+              Nothing -> []
+            there' = case there of
+              Just x -> [BookitemThere ==. readIt x]
+              Nothing -> []
+            lastid' = case lastid of
+              Just x -> [BookitemLastid ==. just x]
+              Nothing -> []
+            sql = concat
+              [ isbn'
+              , bc'
+              , onshelf'
+              , there'
+              , lastid'
+              ] in do
+              rt' <- liftHandlerT $ runDB $ sql []
+              let rt = map lam rt'
+              returnTJson $ object
+                [ "status" .= ("success" ::String)
+                , "result" .= rt
+                ]
+          where
+            just = Just . t2t
+            lam (Entity _ x) = x
+            readIt = read . read . show
 \end{code}
 ReaderlistR，处理读者信息访问。
 \begin{code}
         postReaderlistR :: Yesod master
                         => Text
                         -> HandlerT AnaCom (HandlerT master IO) Text
-        postReaderlistR _ = undefined
+        postReaderlistR _ = do
+          liftHandlerT $ addHeader "Content-Type" "application/json"
 \end{code}
 BookoptinlistR，处理录入操作信息访问。
 \begin{code}
         postBookoptinlistR :: Yesod master
                            => Text
                            -> HandlerT AnaCom (HandlerT master IO) Text
-        postBookoptinlistR _ = undefined
+        postBookoptinlistR _ = do
+          liftHandlerT $ addHeader "Content-Type" "application/json"
 \end{code}
 BookoptoutlistR，处理销毁操作信息访问。
 \begin{code}
         postBookoptoutlistR :: Yesod master
                             => Text
                             -> HandlerT AnaCom (HandlerT master IO) Text
-        postBookoptoutlistR _ = undefined
+        postBookoptoutlistR _ = do
+          liftHandlerT $ addHeader "Content-Type" "application/json"
 \end{code}
 BookoptmainlistR，处理借阅操作信息访问操作。
 \begin{code}
         postBookoptmainlistR :: Yesod master
                              => Text
                              -> HandlerT AnaCom (HandlerT master IO) Text
-        postBookoptmainlistR _ = undefined
+        postBookoptmainlistR _ = do
+          liftHandlerT $ addHeader "Content-Type" "application/json"
 \end{code}
 PunishlistR，处理处罚信息访问操作。
 \begin{code}
         postPunishlistR :: Yesod master
                         => Text
                         -> HandlerT AnaCom (HandlerT master IO) Text
-        postPunishlistR _ = undefined
+        postPunishlistR _ = do
+          liftHandlerT $ addHeader "Content-Type" "application/json"
 \end{code}
 
 实现 YesodSubDispatch
