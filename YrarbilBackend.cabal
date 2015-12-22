@@ -10,7 +10,7 @@ name:                YrarbilBackend
 -- PVP summary:      +-+------- breaking API changes
 --                   | | +----- non-breaking API additions
 --                   | | | +--- code changes with no API change
-version:             0.0.8.20
+version:             0.0.8.40
 
 -- A short (one-line) description of the package.
 synopsis:            The back-end of yrarbil.
@@ -97,6 +97,10 @@ executable yb.launch
     build-depends:     cmdargs >= 0.10&&<0.11
   else
     build-depends:     cmdargs
+  if flag(version-limit)
+    build-depends:     directory >= 1.2.4 && < 2
+  else
+    build-depends:     directory
   ghc-options: -Wall -O2
 
 executable yb.docker.launch
@@ -127,6 +131,10 @@ executable yb.docker.launch
     build-depends:     cmdargs >= 0.10&&<0.11
   else
     build-depends:     cmdargs
+  if flag(version-limit)
+    build-depends:     directory >= 1.2.4 && < 2
+  else
+    build-depends:     directory
   ghc-options: -Wall -O2
 
 

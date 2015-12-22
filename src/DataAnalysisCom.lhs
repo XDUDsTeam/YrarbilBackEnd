@@ -344,28 +344,36 @@ BookoptinlistR，处理录入操作信息访问。
         postBookoptinlistR :: Yesod master
                            => Text
                            -> HandlerT AnaCom (HandlerT master IO) Text
-        postBookoptinlistR _ = undefined
+        postBookoptinlistR _ = do
+          liftHandlerT $ addHeader "Content-Type" "application/json"
+          return ""
 \end{code}
 BookoptoutlistR，处理销毁操作信息访问。
 \begin{code}
         postBookoptoutlistR :: Yesod master
                             => Text
                             -> HandlerT AnaCom (HandlerT master IO) Text
-        postBookoptoutlistR _ = undefined
+        postBookoptoutlistR _ = do
+          liftHandlerT $ addHeader "Content-Type" "application/json"
+          return ""
 \end{code}
 BookoptmainlistR，处理借阅操作信息访问操作。
 \begin{code}
         postBookoptmainlistR :: Yesod master
                              => Text
                              -> HandlerT AnaCom (HandlerT master IO) Text
-        postBookoptmainlistR _ = undefined
+        postBookoptmainlistR _ = do
+          liftHandlerT $ addHeader "Content-Type" "application/json"
+          return ""
 \end{code}
 PunishlistR，处理处罚信息访问操作。
 \begin{code}
         postPunishlistR :: Yesod master
                         => Text
                         -> HandlerT AnaCom (HandlerT master IO) Text
-        postPunishlistR _ = undefined
+        postPunishlistR _ = do
+          liftHandlerT $ addHeader "Content-Type" "application/json"
+          return ""
 \end{code}
 
 实现 YesodSubDispatch

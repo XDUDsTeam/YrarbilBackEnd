@@ -32,6 +32,10 @@ module Main
 \begin{code}
          import  System.Environment
 \end{code}
+处理目录。
+\begin{code}
+        import System.Directory
+\end{code}
 IO
 \begin{code}
          import  System.IO
@@ -62,7 +66,7 @@ IO
          main = runArgs toConfig >>= main'
          main' :: Config-> IO()
          main' c = do
-           (hIn,_,_,hProc) <- createProcess (shell "yb.bin") {std_in=CreatePipe}
+           (hIn,_,_,hProc) <- createProcess (shell $ "yb.bin" ++ exeExtension) {std_in=CreatePipe}
            hPutStrLn (fromMaybe stdout hIn) $ (read $ show $ encode c)
            hClose (fromMaybe stdout hIn)
            print =<< waitForProcess hProc
