@@ -82,7 +82,7 @@ module Args
           &= details
             [ "The is a launcher of yrarbil's backend, which will be used in daocloud's docker-ship."
             ]
-          &= summary "yb.docker.launch v0.0.6, (C) Qinka 2015"
+          &= summary "yb.docker.launch v0.0.8, (C) Qinka 2015"
           &= program "yb.docker.launch"
           &= verbosity
 \end{code}
