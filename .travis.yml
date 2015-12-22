@@ -10,6 +10,7 @@ before_install:
   - "sudo apt-get install ghc-$GHCVER cabal-install-$CABALVER"
   - "export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH"
   - "cabal update"
+  - "cabal install directory"
   - "cabal install yesod -j9"
   - "cabal install persistent-postgresql"
   - "cabal install pureMD5"
