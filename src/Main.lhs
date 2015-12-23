@@ -73,7 +73,7 @@ Data.Text
         import Control.Concurrent(threadDelay)
 \end{code}
 处理 文件夹。
-\begin{code
+\begin{code}
         import System.Directory
 \end{code}
 
