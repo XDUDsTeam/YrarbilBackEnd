@@ -21,6 +21,7 @@
   \newpage
 
   \section{说明}
+  \subsection{警告}
   运行在32位系统中，可能会产生意料之外的BUG。
 
   \section[程序主文件 Main.lhs文件]{Main.lhs}
@@ -51,8 +52,10 @@
   \section{Launcher:用于道客云}
   用于在道客云等 Docker 容器中启动。
   \input{../launch.docker/Main.lhs}
+  \input{../launch.docker/Args.lhs}
   \section{Launcher:通用启动器}
   用于通用环境的启动。
   \input{../launch/Main.lhs}
+  \input{../launch/Args.lhs}
 
 \end{document}

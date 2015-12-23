@@ -14,6 +14,7 @@ YrarbilBackend 是遵循 BSD3 的开源项目，可以在 GitHub 上找到我们
 
 后端理论上可以部署在 包括 Windows, Linux, OS X 10.x, FreeBSD, NetBSD, 等 类-Unix 与 非 Unix 类系统中。
 但是有遗憾的是，目前Windows 下无法直接编译， 由于编译器的缘故，但可以在 Linux 下 使用 mingw 与 wine 为 Win 交叉编译。
+同时 7.10.3 的版本编译器 可能会解决该问题。
 
 ### Linux 类系统下的编译。
 
@@ -41,9 +42,23 @@ cabal install PATH_OF_TAR_GZ
 ```
 编译安装完之后可在 .cabal-sandbox/bin 文件夹中找到二进制代码。
 
+最后需要将 沙盒的 添加到 PATH 环境变量之中。
+
 ## 使用
 使用启动器来启动即可。键入
 ```
 yb.launch -?
 ```
 可获取帮助。
+
+### 其他系统
+
+参考Linux 下的安装方式安装。
+
+## 使用 docker
+
+如果希望使用 docker 容器 运行后端，
+则可直接获取 docker 镜像，然后部署。
+其中需要注意的是，其中需要使用 PostgreSQL 数据库。
+需要使用者为其提供数据库服务，并在容器的环境变量中添加相对的内容。
+具体内容可参见后端参考文档。
