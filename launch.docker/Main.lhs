@@ -34,7 +34,7 @@ module Main
 \end{code}
 处理目录。
 \begin{code}
-        import System.Directory
+         import System.Directory
 \end{code}
 IO
 \begin{code}
