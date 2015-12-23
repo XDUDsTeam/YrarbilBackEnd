@@ -72,6 +72,10 @@ Data.Text
 \begin{code}
         import Control.Concurrent(threadDelay)
 \end{code}
+处理 文件夹。
+\begin{code
+        import System.Directory
+\end{code}
 
 \subsection{定义主程序类型}
 YrabrilBackEnd 后端 主数据
@@ -106,6 +110,7 @@ Yesod 路由表。
         /1daa62b/#Text SubsiteAR Auther getAuther
         /a3cab3a/#Text SubsiteMR Management getManagement
         /c7b70ceb/#Text SubadddelDR AddDel getAddDel
+        /favicon.ico Favicon Get
         |]
 \end{code}
 YrarbilBackend 实现 Yesod 类型类。
@@ -272,4 +277,12 @@ post、get 获得 tidk 的函数。
                   (\_ -> Management pool)
                   (\_ -> AddDel pool)
             Nothing -> error "error config"
+\end{code}
+
+\subsection{icons}
+\begin{code}
+        getFaviconR :: HandlerT YrarbilBackend IO ()
+        getFaviconR = do
+          path <- getAppUserDataDirectory "yb"
+          sendFile "image/png" $ path ++ "/favicon.png"
 \end{code}

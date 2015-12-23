@@ -10,7 +10,7 @@ name:                YrarbilBackend
 -- PVP summary:      +-+------- breaking API changes
 --                   | | +----- non-breaking API additions
 --                   | | | +--- code changes with no API change
-version:             0.0.8.42
+version:             0.0.8.66
 
 -- A short (one-line) description of the package.
 synopsis:            The back-end of yrarbil.
@@ -45,6 +45,10 @@ build-type:          Simple
 -- Extra files to be distributed with the package, such as examples or a
 -- README.
 extra-source-files:  README.md
+                   , image/logo.png
+                   , image/logo2.png
+                   , image/logo3.png
+                   , image/favicon.ico
                    , src/preamble.tex
                    , src/BackEnd.tex
 
@@ -265,6 +269,11 @@ executable yb.bin
     build-depends:     random >= 1 && < 1.5
   else
     build-depends:     random
+    
+  if flag(version-limit)
+    build-depends:     directory >= 1.2.4 && < 2
+  else
+    build-depends:     directory >= 1.2.4
 
   -- Directories containing source files.
   hs-source-dirs:      src

@@ -18,6 +18,8 @@ RUN cd /src && cabal install pureMD5
 RUN cd /src && cabal install cmdargs
 RUN cd /src && cabal install --flags="docker-launch -normal-launch"
 RUN cp /src/.cabal-sandbox/bin/* /usr/bin
+RUN mkdir ~/.yb
+RUN cp /src/image/favicon.ico ~/.yb
 RUN rm -r src
 EXPOSE 3000
 ENV YRARBIL_BACKEND_PORT 3000
