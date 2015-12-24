@@ -80,7 +80,7 @@ Data.Text
 \subsection{定义主程序类型}
 YrabrilBackEnd 后端 主数据
 \begin{code}
-        data YrarbilBackEnd = YrarbilBackEnd
+        data YrarbilBackend = YrarbilBackend
           { connPool :: ConnectionPool
           , getInformation :: Information
           , getAuther :: Text->Auther
@@ -91,10 +91,10 @@ YrabrilBackEnd 后端 主数据
 
 \subsection{数据库}
 \begin{code}
-        instance YesodPersist YrarbilBackEnd where
-          type YesodPersistBackend YrarbilBackEnd = SqlBackend
+        instance YesodPersist YrarbilBackend where
+          type YesodPersistBackend YrarbilBackend = SqlBackend
           runDB a = do
-            YrarbilBackEnd p _ _ _ _ <- getYesod
+            YrarbilBackend p _ _ _ _ <- getYesod
             runSqlPool a p
 \end{code}
 
@@ -104,7 +104,7 @@ YrabrilBackEnd 后端 主数据
 \subsection{Yesod 路由}
 Yesod 路由表。
 \begin{code}
-        mkYesod "YrarbilBackEnd" [parseRoutes|
+        mkYesod "YrarbilBackend" [parseRoutes|
         / HomeR GET
         /version SubsiteVR Information getInformation
         /1daa62b/#Text SubsiteAR Auther getAuther
@@ -115,7 +115,7 @@ Yesod 路由表。
 \end{code}
 YrarbilBackend 实现 Yesod 类型类。
 \begin{code}
-        instance Yesod YrarbilBackEnd where
+        instance Yesod YrarbilBackend where
 \end{code}
 设置 错误句柄 的函数。
 \begin{description}
@@ -206,7 +206,7 @@ YrarbilBackend 实现 Yesod 类型类。
 \end{code}
 post、get 获得 tidk 的函数。
 \begin{code}
-        postAuthTidk,getAuthTidk :: HandlerT YrarbilBackEnd IO AuthResult
+        postAuthTidk,getAuthTidk :: HandlerT YrarbilBackend IO AuthResult
         postAuthTidk  = do
           tidk' <- lookupPostParam "tidk"
           if tidk' == Nothing then return $ Unauthorized ":("
@@ -239,7 +239,7 @@ post、get 获得 tidk 的函数。
 \subsection{访问主页}
 主页由\textbf{getHomeR}生成。
 \begin{code}
-        getHomeR :: HandlerT YrarbilBackEnd IO Html
+        getHomeR :: HandlerT YrarbilBackend IO Html
         getHomeR = do
           right <- liftHandlerT $ isUserAgnetRight
           defaultLayout [whamlet|
@@ -271,7 +271,7 @@ post、get 获得 tidk 的函数。
             Just (st,lmt,p) -> do
               runStderrLoggingT $ withPostgresqlPool st lmt $
                 \pool ->liftIO $
-                warp p $ YrarbilBackEnd pool
+                warp p $ YrarbilBackend pool
                   (Information pool)
                   (\_->Auther pool)
                   (\_ -> Management pool)
