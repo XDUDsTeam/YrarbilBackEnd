@@ -196,13 +196,13 @@ YrarbilBackend 实现 Yesod 类型类。
 访问权限设置。
 \begin{code}
           isAuthorized HomeR  _ = return Authorized
+          isAuthorized FaviconR _ = return Authorized
           isAuthorized (SubsiteVR _) _ = return Authorized
           isAuthorized (SubsiteAR _ (AdmininR _ _)) _ = return Authorized
           isAuthorized (SubsiteAR _ (ReaderinR _ _)) _ = return Authorized
           isAuthorized (SubsiteMR _ _) _ = postAuthTidk
           isAuthorized (SubsiteAR _ _) _ = postAuthTidk
-          isAuthorized (SubadddelDR _ _) _ = postAuthTidk
-          isAuthorized Favicon _ = return Authorized 
+          isAuthorized (SubadddelDR _ _) _ = postAuthTidk 
           isAuthorized _ _ = getAuthTidk
 \end{code}
 post、get 获得 tidk 的函数。
