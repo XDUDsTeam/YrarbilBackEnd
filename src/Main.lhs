@@ -283,6 +283,6 @@ post、get 获得 tidk 的函数。
 \begin{code}
         getFaviconR :: HandlerT YrarbilBackend IO ()
         getFaviconR = do
-          path <- getAppUserDataDirectory "yb"
+          path <- liftIO $ getAppUserDataDirectory "yb"
           sendFile "image/png" $ path ++ "/favicon.png"
 \end{code}
