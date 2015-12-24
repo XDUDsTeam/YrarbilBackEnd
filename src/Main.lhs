@@ -110,7 +110,7 @@ Yesod 路由表。
         /1daa62b/#Text SubsiteAR Auther getAuther
         /a3cab3a/#Text SubsiteMR Management getManagement
         /c7b70ceb/#Text SubadddelDR AddDel getAddDel
-        /favicon.ico Favicon GET
+        /favicon.ico FaviconR GET
         |]
 \end{code}
 YrarbilBackend 实现 Yesod 类型类。
