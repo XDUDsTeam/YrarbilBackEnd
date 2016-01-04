@@ -11,6 +11,7 @@ before_install:
   - "export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH"
   - "cabal update"
   - "cabal install directory"
+  - "cabal install warp < 3.2"
   - "cabal install yesod -j9"
   - "cabal install persistent-postgresql"
   - "cabal install pureMD5"

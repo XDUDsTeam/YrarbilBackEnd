@@ -12,6 +12,7 @@ install:
   - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
   - cabal sandbox init
   - cabal update
+  - cabal install warp < 3.2
   - cabal install directory
   - cabal install yesod -j9
   - cabal install yesod-auth

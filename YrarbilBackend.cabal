@@ -186,6 +186,10 @@ executable yb.bin
   build-depends: base >=4.8 && <4.9
 
   if flag(version-limit)
+    build-depends:     warp < 3.2
+  else
+    build-depends:     warp
+  if flag(version-limit)
     build-depends:     yesod >=1.4.1 && <= 1.6
   else
     build-depends:     yesod
