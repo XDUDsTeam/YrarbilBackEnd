@@ -73,3 +73,15 @@
 %设置 section 格式
 \usepackage{titlesec,titletoc}
 \titleformat{\section}[display]{\Huge\bfseries}{\,\thesection\,}{1em}{}
+
+
+\makeatletter
+\ifdefined\@UsingAppendix
+\usepackage[titletoc]{appendix}
+\renewcommand\appendixname{附录}
+\renewcommand\appendixpagename{附录}
+\appendixtitleon
+\else
+\relax
+\fi
+\makeatother

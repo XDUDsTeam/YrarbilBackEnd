@@ -9,12 +9,68 @@
 % 宏定义
 %%%%%%%%%%%
 
-
+%flag 设置
+\makeatletter
+\def\@NoStyleChapter{} % 设置不适用章节格式
+\def\@BackendDoc{}
+\def\@UsingAppendix{}
+\makeatother
 %导入导言文件
 \input{preamble}
 
 \begin{document}
   \maketitle
+  \newpage
+  % license.tex
+  \section*{LICENSE}\label{license}
+  \# BSD3 License
+  
+  \# we try to change this license to yaml formal
+  
+  \def\qqquad{\quad \qquad}
+  Copyright (c) 2015, XDUDsTeam \\
+  \hspace*{4em} MEMBER\\
+  \hspace*{6em} - name: Qinka\\
+  \hspace*{6.75em}email: qinka@live.com\\
+  \hspace*{6em} - name: qiyuyi\\
+  \hspace*{6.75em}email: 631987611@qq.com\\
+  \hspace*{6em} - name: starsriver\\
+  \hspace*{6.75em}email: starsriver@outlook.com\\
+  \hspace*{6em} - name: woyijkl1\\
+  \hspace*{6.75em}email: yinrongdi@163.com\\
+  \hspace*{6em} - name: daisycx \\
+  \hspace*{6.75em}email: 729227860@qq.com
+  \vspace{0.5em}
+  
+  All rights reserved.
+  \vspace*{0.5em}
+  
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
+  \vspace{.5em}
+  
+  - Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+  \par \vspace{0.25em}
+  - Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+  \par \vspace{0.25em}
+  - Neither the name of Yrarbil nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+  
+  \vfill
+  \textbf{THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+      AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+      IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+      DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+      FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+      DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+      SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+      CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+      OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+      OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.}
   \newpage
   \tableofcontents
   \pdfbookmark[1]{目录}{Qinka}
@@ -57,5 +113,57 @@
   用于通用环境的启动。
   \input{../launch/Main.lhs}
   \input{../launch/Args.lhs}
-
+\newpage
+    \begin{appendices}
+        % 参考文档链接
+        \def\ApiDocPDF{\href{https://github.com/XDUDsTeam/YrarbilRelease/raw/master/APIDoc.pdf}{API Document}}
+        \def\ArchitectureDesignPDF{\href{https://github.com/XDUDsTeam/YrarbilRelease/raw/master/ArchitectureDesign.pdf}{Architecture Design Document}}
+        \def\BackEndPdf{\href{https://github.com/XDUDsTeam/YrarbilRelease/raw/master/BackEnd.pdf}{Backend Document}} 
+        \def\DemandAnalysisPdf{\href{https://github.com/XDUDsTeam/YrarbilRelease/raw/master/DemandAnalysis.pdf}{Demand Analysis Docment}}
+        \def\TestReportPDF{\href{https://github.com/XDUDsTeam/YrarbilRelease/raw/master/TestReport.pdf}{Text Report}}
+        
+        \makeatletter
+        \ifdefined \@NoStyleChapter
+        \section{可参考文档}
+        \else
+        \chapter{可参考文档}
+        \fi
+        \makeatother
+        
+        
+        Github \& Travis-CI 版
+        \begin{itemize}
+            \makeatletter
+            \ifdefined \@APIDoc
+            \relax
+            \else
+            \item \ApiDocPDF
+            \fi
+            
+            \ifdefined \@ADDoc
+            \relax
+            \else
+            \item \ArchitectureDesignPDF
+            \fi
+            
+            \ifdefined \@BackendDoc
+            \relax
+            \else
+            \item \BackEndPdf
+            \fi
+            
+            \ifdefined \@DADoc
+            \relax
+            \else
+            \item \DemandAnalysisPdf
+            \fi
+            
+            \ifdefined \@TRDoc
+            \relax
+            \else
+            \item \TestReportPDF
+            \fi
+            \makeatother
+        \end{itemize}
+    \end{appendices}
 \end{document}
